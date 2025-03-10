@@ -33,7 +33,7 @@ def read_edl():
                                   "timeframe_in": clip_in, 
                                   "timeframe_out": clip_out
                                   })
-                #print(f"Match found for clip {clip_name}")
+                print(f"Match found for clip {clip_name}")
             else:
                 print(f"No match found for clip {clip_name}")
     return edl_shots
@@ -146,6 +146,12 @@ def compare_shots():
                     match_found = True
                 if edl_shot_cut_out != kitsu_shot.get("timeframe_out"):
                     print(f"Cut out for shot {edl_shot_name} is different in Kitsu")
+                    shots_to_update.append({
+                        "name": edl_shot_name,
+                        "timeframe_in": edl_shot_cut_in,
+                        "timeframe_out": edl_shot_cut_out,
+                        "id": kitsu_shot_id
+                        })
                     match_found = True
 
     return shots_to_update
@@ -178,7 +184,8 @@ def update_kitsu():
 
 
 #get_project_shots()
+read_edl()
 #get_project()
 #selected_project = select_project()
 #print(f"Selected project: {selected_project}")
-update_kitsu()
+#update_kitsu()

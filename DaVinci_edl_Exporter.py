@@ -1,7 +1,7 @@
 import os
 import sys
 
-export_directory = r"D:\HecberryStuff\PAINANI STUDIOS\1_Proyectos\Active\1_Animaorquesta\PipeTest"
+export_directory = #Define your path in here. Example: "C:/Users/username/Desktop/Exported_Timelines"
 
 resolve = app.GetResolve()
 projectManager = resolve.GetProjectManager()

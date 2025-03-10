@@ -1,0 +1,53 @@
+# Editorial Publisher
+
+THIS IS STILL WORK IN PROGRESS 
+
+This project contains tools for automating tasks in DaVinci Resolve, such as exporting EDL files and configuring render settings. And importing the edl and shots into Kitsu.
+
+## Requirements
+
+- DaVinci Resolve
+- Python 3.x
+- DaVinci Resolve API
+
+## Installation
+
+1. Clone the repository:
+    ```sh
+    git clone https://github.com/yourusername/Editorial_Publisher.git
+    cd Editorial_Publisher
+    ```
+
+2. Install the required Python packages:
+    ```sh
+    pip install -r requirements.txt
+    ```
+
+## Usage
+
+### DaVinci EDL Exporter
+
+This script exports the current timeline in DaVinci Resolve to an EDL file.
+
+1. Define the export directory in the script:
+    ```python
+    export_directory = "C:/Users/username/Desktop/Exported_Timelines"
+    ```
+
+2. Run the script:
+    ```sh
+    python DaVinci_edl_Exporter.py
+    ```
+
+### DaVinci Rendering
+
+This script configures and starts a render job in DaVinci Resolve using the first available render preset.
+
+1. Run the script:
+    ```sh
+    python DaVinciRendering.py
+    ```
+
+## License
+
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.

@@ -31,18 +31,29 @@ IN CONSTRUCTION
 IN CONSTRUCTION
 
 ## Roadmap
-1. file management. 
-   * Check for existing files and names 
-   * Creation of folders and files 
-   * Syncronization using Syncthing, 
+1. [ ] Load versions from Kitsu into Resolve timeline
+   * [ ] Latest versions for each shot
+   * [ ] Based on a Playlist
+   * [ ] Ask user for specifc tasks
+   * [ ] Flag user if any shot has changed from the latest editorial cut 
+
+2. [ ] File management. 
+   * [ ] Check for existing files and names based on a specific directory structure
+   * [ ] Creation of folders and files 
+   * [ ] Syncronization setup using syncthing or other file management systems 
    * File Management could maybe work with Prism. 
-   * File management should also be as modular as possible so it can be software agnostic. 
-2. update based on a playlist, flag if any of the shots cut length has changed from latest editorial update. (this should also be flagged when publishing in animation or layout or whatever step.)
-3. Load latest versions of shots regardless of task. Ask the user if they want any specific tasks 
-4. This should be as software agnostic as possible, so also implement other editorial softwares like kdknife 
-5. - []Investigate what would be the input for editorial from storyboard or animatic. Exports from storyboarder or toon boom storyboard. 
-6. - [] Add support to transitions, effects and other elements done in multiple tracks by editorial. 
-7. Currently Kitsu and OpenTimelineIO services are running on a vm 
+   * [ ] File management should also be as modular as possible so it can be software agnostic. 
+
+3. [ ] Add support to transitions, effects and other elements done in multiple tracks by editorial.
+
+4. [ ] Implement other editorial software
+   * [ ] 
+
+5. [ ] Investigate what would be the input for editorial from storyboard or animatic. Exports from storyboarder or toon boom storyboard. 
+
+ 
+
+6. [x] Currently Kitsu and OpenTimelineIO services are running on a vm 
 
 ## License
 This project is licensed under the MIT License.

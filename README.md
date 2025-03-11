@@ -31,29 +31,37 @@ IN CONSTRUCTION
 IN CONSTRUCTION
 
 ## Roadmap
-1. [ ] Load versions from Kitsu into Resolve timeline
+1. [ ] Single shot render files should follow the naming convention stablished for the project version entity.
+
+2. [ ] Connect process of edl export and rendering
+
+3. [ ] Add button or script to resolve to start the process from inside
+
+4. [ ] Load versions from Kitsu into Resolve timeline
    * [ ] Latest versions for each shot
    * [ ] Based on a Playlist
    * [ ] Ask user for specifc tasks
    * [ ] Flag user if any shot has changed from the latest editorial cut 
 
-2. [ ] File management. 
+5. [ ] File management. 
    * [ ] Check for existing files and names based on a specific directory structure
    * [ ] Creation of folders and files 
    * [ ] Syncronization setup using syncthing or other file management systems 
    * File Management could maybe work with Prism. 
    * [ ] File management should also be as modular as possible so it can be software agnostic. 
 
-3. [ ] Add support to transitions, effects and other elements done in multiple tracks by editorial.
+6. [ ] Add support to transitions, effects and other elements done in multiple tracks by editorial.
 
-4. [ ] Implement other editorial software
-   * [ ] 
+7. [ ] Add support to run process in a render farm to avoid using the user computer
 
-5. [ ] Investigate what would be the input for editorial from storyboard or animatic. Exports from storyboarder or toon boom storyboard. 
+8. [ ] Implement other editorial software
+   * [ ] OpenShot
+   * [ ] Kdenlive
+   * [ ] Adobe Premiere
+   * [ ] Avid
 
- 
+9. [ ] Investigate what would be the input for editorial from storyboard or animatic. Exports from storyboarder or toon boom storyboard. 
 
-6. [x] Currently Kitsu and OpenTimelineIO services are running on a vm 
 
 ## License
 This project is licensed under the MIT License.

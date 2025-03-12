@@ -136,27 +136,27 @@ def full_cut_render_settings():
     
 
     timeline_name = project.GetCurrentTimeline().GetName()
-    Filename = project_name + "_" + timeline_name + "_render"
-    full_cut_name = get_unique_filename(Filename, output_folder)
+    full_cut_filename = project_name + "_" + timeline_name + "_render"
+    full_cut_name = get_unique_filename(full_cut_filename, output_folder)
     
     render_folder = project.SetRenderSettings({
         "TargetDir": output_folder,
-        "CustomName": Filename
+        "CustomName": full_cut_filename
     })
     full_cut_render_job = project.AddRenderJob()
     #full_cut_render = project.GetRenderJobList(full_cut_render_job)
     #pprint.pprint(full_cut_render)
     print(f"Parameters set for render job for project: {project_name}, render preset: {render_preset}")
 
-    return full_cut_render_job
+    return full_cut_render_job, full_cut_filename
 
 def get_unique_renderJob_name():
     project = get_current_project()
-    full_cut_render_job = full_cut_render_settings()
+    full_cut_render_job, full_cut_filename = full_cut_render_settings()
     job_info = project.GetRenderJobList(full_cut_render_job)
     #pprint.pprint(job_info)
     job_path = job_info[1].get("TargetDir")
-    job_name = job_info[1].get("OutputFilename")
+    job_name = full_cut_filename
 
     file_exists = get_unique_filename(job_name, job_path)
     print(file_exists)

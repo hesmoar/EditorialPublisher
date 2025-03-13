@@ -32,8 +32,11 @@ IN CONSTRUCTION
 
 ## Roadmap
 1. [ ] Single shot render files should follow the naming convention stablished for the project version entity.
+   * [x] Done in standalone version
+   * [ ] Add to modular version
 
-2. [ ] Connect process of edl export and rendering
+2. [x] Connect process of edl export and rendering
+   * Done in the standalone version
 
 3. [ ] Add button or script to resolve to start the process from inside
 

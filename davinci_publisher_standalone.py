@@ -5,7 +5,7 @@ import pprint
 
 
 export_directory = r"D:\HecberryStuff\PAINANI STUDIOS\1_Proyectos\Active\1_Animaorquesta\PipeTest"
-output_folder = r"D:\HecberryStuff\PAINANI STUDIOS\1_Proyectos\Active\1_Animaorquesta\PipeTest\RenderTest"
+output_folder = r"D:\HecberryStuff\PAINANI STUDIOS\1_Proyectos\Active\1_Animaorquesta\PipeTest\RenderTest\Clips"
 
 def get_current_project():
 
@@ -43,7 +43,7 @@ def get_clips_from_timeline():
 def get_unique_filename(base_name, directory, extension=None):
     if not os.path.exists(directory):
         print(f"Error: Export directory '{directory}' does not exist.")
-        return None
+        return None, None
     version = 1
     while True:
         if extension:
@@ -52,7 +52,7 @@ def get_unique_filename(base_name, directory, extension=None):
             filename = f"{base_name}_v{version:03d}"
         filepath = os.path.join(directory, filename)
         if not os.path.exists(filepath):
-            return filepath
+            return filepath, filename
         version += 1
 
 
@@ -60,7 +60,7 @@ def export_edl():
     edl_name = get_timeline_name()
     if not edl_name:
         return
-    edlFilePath = get_unique_filename(edl_name, export_directory, "edl")
+    edlFilePath, edlFilename = get_unique_filename(edl_name, export_directory, "edl")
     if not edlFilePath:
         return
     if not os.path.isdir(os.path.dirname(edlFilePath)):
@@ -95,8 +95,8 @@ def single_shots_render_settings():
     MarkInOut = timeline.GetMarkInOut()
     MarkIn = MarkInOut.get("video", {}).get("in", 0)
     MarkOut = MarkInOut.get("video", {}).get("out", 0)
-    print(MarkIn)
-  
+    #print(MarkIn)
+    render_jobs = []
 
 
     for clip in timeline_items:
@@ -106,20 +106,20 @@ def single_shots_render_settings():
         #print(f"Clip: {clip_name} starts on {clip_start} and ends on {clip_end}")
         if clip_start >= MarkIn and clip_end <= MarkOut:
             render_name = clip_name + "_" + timeline_name
-            filename = get_unique_filename(render_name, output_folder)
 
 
             render_settings = project.SetRenderSettings({
                 "TargetDir": output_folder,
                 "CustomName": render_name
             })
+            render_job = project.AddRenderJob()
+            render_jobs.append(render_job)
 
-            single_shots_render_job = project.AddRenderJob()
     
             print(f"Parameters set for {clip_name} render job, render preset: {render_preset}")
 
-
-    return single_shots_render_job
+    #print(render_jobs)
+    return render_jobs
 #single_shots_render_settings()
 
 
@@ -136,41 +136,72 @@ def full_cut_render_settings():
     
 
     timeline_name = project.GetCurrentTimeline().GetName()
-    full_cut_filename = project_name + "_" + timeline_name + "_render"
-    full_cut_name = get_unique_filename(full_cut_filename, output_folder)
+    full_cut_filename = project_name + "_" + timeline_name
+
     
-    render_folder = project.SetRenderSettings({
+    render_settings = project.SetRenderSettings({
         "TargetDir": output_folder,
         "CustomName": full_cut_filename
     })
     full_cut_render_job = project.AddRenderJob()
-    #full_cut_render = project.GetRenderJobList(full_cut_render_job)
-    #pprint.pprint(full_cut_render)
-    print(f"Parameters set for render job for project: {project_name}, render preset: {render_preset}")
+
+    print(f"Parameters set for: {project_name} full cut, render preset: {render_preset}")
 
     return full_cut_render_job, full_cut_filename
+#full_cut_render_settings()
 
 def get_unique_renderJob_name():
     project = get_current_project()
-    full_cut_render_job, full_cut_filename = full_cut_render_settings()
-    job_info = project.GetRenderJobList(full_cut_render_job)
+    single_shots_render_job = single_shots_render_settings()
+    full_cut_render_job = full_cut_render_settings()
+    project_render_jobs = project.GetRenderJobList()#single_shots_render_job)
+    pprint.pprint(project_render_jobs)
+    #print(project_render_jobs[2].get("OutputFilename"))
     #pprint.pprint(job_info)
-    job_path = job_info[1].get("TargetDir")
-    job_name = full_cut_filename
+    jobs_to_render = []
+    for job in project_render_jobs:
+        job_output_filename = job.get("OutputFilename", "Unknown")
+        print(f"This is the original job filename: {job_output_filename}")
+        job_output_folder = job.get("TargetDir", "Unknown")
+        job_id = job.get("JobId", "Unknown")
+        base_name, extension = os.path.splitext(job_output_filename)
+        extension = extension.lstrip(".")
+        final_render_filename = get_unique_filename(base_name, job_output_folder, extension)[1]
+        print(f"This is the adjusted filename: {final_render_filename}")
+        #pprint.pprint(job)
 
-    file_exists = get_unique_filename(job_name, job_path)
-    print(file_exists)
-    #print(job_path +  job_name)
+        if final_render_filename != job_output_filename:
+            print(f"Final render job name: {final_render_filename} is different")
+            project.DeleteRenderJob(job_id)
 
-get_unique_renderJob_name()
+            project.SetRenderSettings({
+                "TargetDir": job_output_folder,
+                "CustomName": final_render_filename
+            })
+            new_render_job = project.AddRenderJob()
+            jobs_to_render.append(new_render_job)
+        else:
+            #job["OutputFilename"] = final_render_filename
+        #print(f"Final render job name: {final_render_filename}")
+            jobs_to_render.append(job_id)
+        pprint.pprint(f"These are the final names: {job.get("OutputFilename")}")
+
+    return jobs_to_render
+    
+
+
+#get_unique_renderJob_name()
 
 
 def render_jobs():
     project = get_current_project()
-    single_shot_render_job = single_shots_render_settings()
-    full_cut_render_job = full_cut_render_settings()
-    print(f"Render jobs {single_shot_render_job} and {full_cut_render_job} created successfully.")
-    #project.StartRendering(single_shots_render_settings, full_cut_render_settings)
+    #single_shot_render_job = single_shots_render_settings()
+    #full_cut_render_job = full_cut_render_settings()
+    jobs_to_render = get_unique_renderJob_name()
+    print(jobs_to_render)
+    #print(f"Render jobs {single_shot_render_job} and {full_cut_render_job} created successfully.")
+    project.StartRendering(jobs_to_render)
+render_jobs()
 
 
 

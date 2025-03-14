@@ -1,11 +1,12 @@
 import os
 import sys
+from davinci_project_context import get_current_project
 
 export_directory = #Define your path in here. Example: "C:/Users/username/Desktop/Exported_Timelines"
 
-resolve = app.GetResolve()
-projectManager = resolve.GetProjectManager()
-project = projectManager.GetCurrentProject()
+
+
+project = GetCurrentProject()
 timeline = project.GetCurrentTimeline()
 timeline_name = timeline.GetName()
 edl_name = timeline_name + "_v001.edl"

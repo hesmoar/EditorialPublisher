@@ -2,6 +2,7 @@
 import os
 import sys
 import pprint
+from davinci_project_context import get_current_project
 
 #export_directory = #Define your path in here. Example: "C:/Users/username/Desktop/Exported_Timelines"
 #TO DO
@@ -11,40 +12,8 @@ import pprint
 # updates all the shots in kitsu 
 
 
-def get_current_project():
-    """
-    Retrieves the current project from DaVinci Resolve.
-    This function uses the DaVinci Resolve API to get the current project
-    being worked on. It prints the name of the current project and returns
-    the project object.
-    Returns:
-        object: The current project object from DaVinci Resolve.
-    """
-    resolve = app.GetResolve()
-    projectManager = resolve.GetProjectManager()
-    current_project = projectManager.GetCurrentProject()
-    project = current_project.GetName()
-    #print(project)
-
-    return current_project
-
-
-
-
 def single_shots_render_settings(): 
-    """
-    Configures and starts a render job in DaVinci Resolve using the first available render preset.
-    This function performs the following steps:
-    1. Retrieves the current project.
-    2. Sets the current render mode to 0.
-    3. Retrieves the list of render presets and selects the first preset.
-    4. Constructs the output folder path and filename based on the project and timeline names.
-    5. Sets the render settings with the target directory and custom filename.
-    6. Adds a new render job to the project.
-    7. Starts the rendering process for the new render job.
-    Returns:
-        bool: The result of setting the current render mode.
-    """
+
     project = get_current_project()
     project_renderMode = project.SetCurrentRenderMode(0)
     render_preset_list = project.GetRenderPresetList()

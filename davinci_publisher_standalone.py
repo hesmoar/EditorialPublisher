@@ -4,9 +4,9 @@ import sys
 import pprint
 import tkinter as tk
 from tkinter import filedialog
-import DaVinciResolveScript as dvr
 
-app = dvr.Resolve()
+
+
 
 
 #EXPORT_DIRECTORY = r"D:\HecberryStuff\PAINANI STUDIOS\1_Proyectos\Active\1_Animaorquesta\PipeTest"

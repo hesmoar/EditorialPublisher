@@ -5,11 +5,12 @@ import opentimelineio as otio
 import re
 from kitsu_project_context import get_project, select_project
 from davinci_publisher_standalone import export_edl
+from kitsu_editorial_publisher_2 import edl_file_path
 
 
 #test_edl = r"D:\HecberryStuff\PAINANI STUDIOS\1_Proyectos\Active\1_Animaorquesta\PipeTest\AO_PipeTest_A_v009.edl"
-test_edl = export_edl()
-print(test_edl)
+test_edl = edl_file_path
+#print(test_edl)
 #regex_pattern = r"(AO)_(\d{4})-(\d{4})"
 regex_pattern = r"(\w+)_(\d{4})-(\d{4})"
 
@@ -52,7 +53,6 @@ def read_edl():
     return edl_shots
 
 
-read_edl()
 
 
 #This function gets all the shots from a project in kitsu and creates a dictionarywith their name, timeframe_in and timeframe_out keys
@@ -160,4 +160,4 @@ def update_kitsu():
 
 
 
-#update_kitsu()
+update_kitsu()

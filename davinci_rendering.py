@@ -12,65 +12,96 @@ from davinci_project_context import get_current_project
 # updates all the shots in kitsu 
 
 
-def single_shots_render_settings(): 
+def single_shots_render_settings():
+    """Set render settings for individual shots and create render jobs."""
 
     project = get_current_project()
-    project_renderMode = project.SetCurrentRenderMode(0)
-    render_preset_list = project.GetRenderPresetList()
-    render_preset = project.GetRenderPresetList()[0]  # Use first preset
-    project_name = project.GetName()
-    output_folder = r"D:\HecberryStuff\PAINANI STUDIOS\1_Proyectos\Active\1_Animaorquesta\PipeTest\RenderTest"
-
-    timeline_name = project.GetCurrentTimeline().GetName()
-    Filename_tmp = project_name + "_" + timeline_name + "_test"
+    if not project:
+        print("No current project found")
+        return []
     
-    render_folder = project.SetRenderSettings({
-        "TargetDir": output_folder,
-        "CustomName": Filename_tmp
-    })
+    timeline = project.GetCurrentTimeline()
+    if not timeline:
+        print("No current timeline found") 
+        return []
 
-    single_shots_render_job = project.AddRenderJob()
-    print(f"Parameters set for render job for project: {project_name}, render preset: {render_preset}")
+    project.SetCurrentRenderMode(1)
+    render_preset = next(iter(project.GetRenderPresetList()), "DefaultPreset")
+
+    MarkInOut = timeline.GetMarkInOut()
+    MarkIn = MarkInOut.get("video", {}).get("in", 0)
+    MarkOut = MarkInOut.get("video", {}).get("out", 0)
+    
+
+    render_jobs = []
+    for clip in timeline.GetItemListInTrack("video", 1):
+        clip_start, clip_end = clip.GetSourceStartFrame(), clip.GetSourceEndFrame()
+
+        #print(f"Clip: {clip_name} starts on {clip_start} and ends on {clip_end}")
+        if clip_start >= MarkIn and clip_end <= MarkOut:
+            render_name = f"{clip.GetName()}_{timeline.GetName()}"
 
 
-    return single_shots_render_job
+            project.SetRenderSettings({
+                "TargetDir": OUTPUT_FOLDER,
+                "CustomName": render_name
+            })
+            render_job = project.AddRenderJob()
+            render_jobs.append(render_job)
+
+    
+            #print(f"Parameters set for {clip_name} render job, render preset: {render_preset}")
+    print(f"Created {len(render_jobs)} shot render jobs (preset: {render_preset})")
+
+    return render_jobs
+
 
 
 
 
 def full_cut_render_settings():
 
+
     project = get_current_project()
-    project_renderMode = project.SetCurrentRenderMode(1)
-    render_preset_list = project.GetRenderPresetList()
-    render_preset = project.GetRenderPresetList()[0]  # Use first preset
-    project_name = project.GetName()
-    output_folder = r"D:\HecberryStuff\PAINANI STUDIOS\1_Proyectos\Active\1_Animaorquesta\PipeTest\RenderTest"
-
-    timeline_name = project.GetCurrentTimeline().GetName()
-    Filename_tmp = project_name + "_" + timeline_name + "_test"
+    if not project:
+        print("No current project found")
+        return None, None
     
-    render_folder = project.SetRenderSettings({
-        "TargetDir": output_folder,
-        "CustomName": Filename_tmp
+    project.SetCurrentRenderMode(1)
+    render_preset = next(iter(project.GetRenderPresetList()), "DefaultPreset")
+
+    project_name = project.GetName()
+    
+    
+
+    timeline_name = get_timeline_name(project)
+    if not timeline_name:
+        return None, None
+    
+    project.SetRenderSettings({
+        "TargetDir": OUTPUT_FOLDER,
+        "CustomName": timeline_name
     })
-
     full_cut_render_job = project.AddRenderJob()
-    print(f"Parameters set for render job for project: {project_name}, render preset: {render_preset}")
 
+    print(f"Created full cut render job (preset: {render_preset})")
 
-    return full_cut_render_job
-
-#single_shots_render_settings()
+    return full_cut_render_job, timeline_name
 #full_cut_render_settings()
 
 
-
 def render_jobs():
+    """Render all jobs after ensuring unique filenames."""
     project = get_current_project()
-    single_shot_render_job = single_shots_render_settings()
-    full_cut_render_job = full_cut_render_settings()
-    project.StartRendering(single_shots_render_settings, full_cut_render_settings)
+    if not project:
+        return
+    #single_shot_render_job = single_shots_render_settings()
+    #full_cut_render_job = full_cut_render_settings()
+    jobs_to_render = get_unique_renderJob_name()
+    print(f"Rendering jobs {jobs_to_render}")
+    #print(f"Render jobs {single_shot_render_job} and {full_cut_render_job} created successfully.")
+    if jobs_to_render:
+        project.StartRendering(jobs_to_render)
 
 
 render_jobs()

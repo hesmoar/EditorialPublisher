@@ -13,23 +13,6 @@ from tkinter import filedialog
 #OUTPUT_FOLDER = r"D:\HecberryStuff\PAINANI STUDIOS\1_Proyectos\Active\1_Animaorquesta\PipeTest\RenderTest\Clips"
 
 
-def ask_folders():
-    root = tk.Tk()
-    root.withdraw()  # Hide the main window
-
-    root.lift()  # Bring the window to the front
-    root.attributes("-topmost", 1)  # Keep the window on top
-    
-    output_folder = filedialog.askdirectory(title="Select Render Output Folder")
-    export_folder = filedialog.askdirectory(title="Select edl Output Folder") 
-    if not output_folder or not export_folder:
-        print("Error: Both folders must be selected.")
-        sys.exit(1)  # Exit the script if folders are not selected
-
-    return export_folder, output_folder
-EXPORT_DIRECTORY, OUTPUT_FOLDER = ask_folders()
-print(EXPORT_DIRECTORY, OUTPUT_FOLDER)
-
 def get_current_project():
 
     resolve = app.GetResolve()

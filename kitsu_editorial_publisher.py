@@ -3,12 +3,11 @@ import pprint
 import json
 import opentimelineio as otio
 import re
-from kitsu_project_context import get_project, select_project
-from davinci_publisher_standalone import export_edl
-from kitsu_editorial_publisher_2 import edl_file_path
+
 
 
 #test_edl = r"D:\HecberryStuff\PAINANI STUDIOS\1_Proyectos\Active\1_Animaorquesta\PipeTest\AO_PipeTest_A_v009.edl"
+example_file = r"D:\HecberryStuff\PAINANI STUDIOS\1_Proyectos\Active\1_Animaorquesta\PipeTest\AO_Animatic_OTIOtest.otio"
 test_edl = edl_file_path
 #print(test_edl)
 #regex_pattern = r"(AO)_(\d{4})-(\d{4})"
@@ -51,6 +50,28 @@ def read_edl():
             else:
                 print(f"No match found for clip {clip_name}")
     return edl_shots
+
+def read_otio():
+    timeline = otio.adapters.read_from_file(example_file)
+    otio_shots = []
+
+    for track in timeline.tracks:
+        for clip in track:
+            if isinstance(clip, otio.schema.Clip):   # Ensure it's a clip
+                clip_timein = clip.source_range.start_time.to_timecode()
+                clip_timeout = clip.source_range.duration.to_timecode()
+                print(f"Clip: {clip.name}, Start Time: {clip_timein}, Duration: {clip_timeout}")
+
+                match = re.match(regex_pattern, clip.name)
+                if match:
+                    shot_name = match.group(3)
+                    otio_shots.append({"name": shot_name,
+                                       "timeframe_in": clip_timein,
+                                       "timeframe_out": clip_timeout
+                                       })
+                else:
+                    print(f"No match found for clip {clip.name}")
+    return otio_shots
 
 
 
@@ -132,6 +153,14 @@ def update_kitsu():
     #project = get_project()
     shots_to_update = compare_shots()
 
+    if file_path.endswith('.edl'):
+        edl_shots = read_edl(file_path)
+    elif file_path.endswith('.otio'):
+        edl_shots = read_otio(file_path)
+    else:
+        print("Unsupported file format")
+        return
+
     if not shots_to_update:
         print("No shots to update. Everything is up to date.")
         return
@@ -159,5 +188,5 @@ def update_kitsu():
             print(f"Failed to update shot {shot_name} in Kitsu: {e}")
 
 
-
-update_kitsu()
+read_otio()
+#update_kitsu()

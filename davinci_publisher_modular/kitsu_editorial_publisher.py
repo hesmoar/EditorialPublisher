@@ -144,6 +144,7 @@ def compare_shots(file_path):
     return shots_to_update
 
 
+
 def update_kitsu(file_path):
     #project = get_project()
     shots_to_update = compare_shots(file_path)

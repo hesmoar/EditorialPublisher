@@ -25,7 +25,9 @@ def single_shots_render_settings(project, output_folder):
             render_name = f"{clip.GetName()}_{timeline.GetName()}"
             project.SetRenderSettings({
                 "TargetDir": output_folder,
-                "CustomName": render_name
+                "CustomName": render_name,
+                "MarkIn": clip_start,
+                "MarkOut": clip_end
             })
             render_job = project.AddRenderJob()
             if render_job:

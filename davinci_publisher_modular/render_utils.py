@@ -1,11 +1,8 @@
-# render_utils.py
 import os
 from timeline_utils import get_timeline, get_clips_from_timeline, get_timeline_name
 from file_utils import get_unique_filename
 from project_utils import get_current_project
 
-OUTPUT_FOLDER = r"D:\HecberryStuff\PAINANI STUDIOS\1_Proyectos\Active\1_Animaorquesta\PipeTest\RenderTest\Clips"
-#project = get_current_project(app)
 
 def single_shots_render_settings(project, output_folder):
     """Set render settings for individual shots and create render jobs."""
@@ -62,8 +59,8 @@ def full_cut_render_settings(project, output_folder):
 def get_unique_renderJob_name(project, output_folder):
     """Ensure render job filenames are unique by checking existing ones and updating if necessary."""
     updated_jobs = []
-    single_shots_render_settings(project, OUTPUT_FOLDER)
-    full_cut_render_settings(project, OUTPUT_FOLDER)
+    single_shots_render_settings(project, output_folder)
+    full_cut_render_settings(project, output_folder)
     for job in project.GetRenderJobList():
         job_filename = job.get("OutputFilename", "Unknown")
         job_folder = job.get("TargetDir", "Unknown")
@@ -85,10 +82,11 @@ def get_unique_renderJob_name(project, output_folder):
             print(f"Adding job: {job_id}")
     return updated_jobs
 
-def render_jobs(project):
+def render_jobs(project, output_folder):
     """Render all jobs after ensuring unique filenames."""
-    jobs_to_render = get_unique_renderJob_name(project, OUTPUT_FOLDER)
+    jobs_to_render = get_unique_renderJob_name(project, output_folder)
     if jobs_to_render:
         print("Rendering current jobs please wait.")
         project.StartRendering(jobs_to_render)
+
 

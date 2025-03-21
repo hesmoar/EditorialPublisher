@@ -2,10 +2,16 @@
 import os
 import sys
 import pprint
+import tkinter as tk
+from tkinter import filedialog
 
 
-EXPORT_DIRECTORY = r"D:\HecberryStuff\PAINANI STUDIOS\1_Proyectos\Active\1_Animaorquesta\PipeTest"
-OUTPUT_FOLDER = r"D:\HecberryStuff\PAINANI STUDIOS\1_Proyectos\Active\1_Animaorquesta\PipeTest\RenderTest\Clips"
+
+
+
+#EXPORT_DIRECTORY = r"D:\HecberryStuff\PAINANI STUDIOS\1_Proyectos\Active\1_Animaorquesta\PipeTest"
+#OUTPUT_FOLDER = r"D:\HecberryStuff\PAINANI STUDIOS\1_Proyectos\Active\1_Animaorquesta\PipeTest\RenderTest\Clips"
+
 
 def get_current_project():
 
@@ -72,6 +78,11 @@ def export_edl():
         print("No current project found")
         return False
     
+    timeline = project.GetCurrentTimeline()
+    if not timeline:
+        print("No current timeline found")
+        return
+    
     edl_name = get_timeline_name(project)
     if not edl_name:
         return
@@ -86,6 +97,7 @@ def export_edl():
             print("Timeline export failed.")
     except Exception as e:
         print(f"Error exporting timeline: {e}")
+    return edlFilePath
 
 def single_shots_render_settings():
     """Set render settings for individual shots and create render jobs."""

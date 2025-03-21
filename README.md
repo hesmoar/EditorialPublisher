@@ -1,34 +1,160 @@
-# Editorial Publisher
+# 🎬 Editorial Publisher
 
-THIS IS STILL A WORK IN PROGRESS
+A modular toolset for exporting and rendering editorial timelines in **DaVinci Resolve**, and updating metadata in Kitsu. This project allows you to streamline the editorial process by exporting EDLs, OTIO files, and rendering shot-based clips and full cuts automatically.
 
-## Overview
-The Editorial Publisher is a Python tool designed to automate the publication process for editorial department, by exporting timelines from DaVinci Resolve in EDL (Edit Decision List) format and render the full cut and single shots, updating the information stored in Kitsu (project manager).
+---
 
-## Features
-- `DaVinci_edl_Exporter.py`
-   - Generates unique filenames for exported EDL files.
-   - Validates the existence of timelines and export directories.
-   - Handles errors during the export process.
-- `DaVinciRendering.py`
-   - Creates 2 render jobs: one with the full cut and another for single shots.
-- `KitsuAuth.py`
-   - Logs into Kitsu server based on the environment variables.
-- `kitsuEditorial_publisher.py`
-   - Reads a given EDL using OTIO and stores the data from the shot and its cut in and cut out values.
-   - Retrieves data from Kitsu shots.
-   - Compares data from both EDL and Kitsu and updates the data in Kitsu if there are differences with the EDL.
-- `project_context.py`
-   - Retrieves projects from Kitsu and allows the user to select one.
-- `kitsu_update.py`
-   - Updates shot information in Kitsu based on the comparison results.
+## 🚀 **Features**
+
+✅ Export EDL and OTIO files from DaVinci Resolve timelines.\
+✅ Render individual shots and/or full cuts.\
+✅ Modular and extensible design for easy customization.\
+✅ Folder selection via GUI for flexible output locations.\
+✅ Error handling and logging for smooth execution.
+
+---
+
+## ⚙️ **Installation**
+
+1. **Clone the Repository**
+
+```bash
+git clone https://github.com/hesmoar/EditorialPublisher.git
+cd EditorialPublisher
+```
+
+2. **Set Up Environment Variables**
+
+- Create a `.env` file at the root of the project.
+- Add the following variables:
+
+```
+PIPE_SCRIPTS_PATH= **Path where you store the scripts**
+```
+
+3. **Install Required Dependencies**
+
+- If you’re using a virtual environment:
+
+```bash
+pip install -r requirements.txt
+```
+
+- If you want to run the GUI:
+
+```bash
+pip install tk
+```
+
+4. **Add the DaVinci Resolve Scripting Path**
+
+- Add the Resolve scripting path to your `PYTHONPATH` or use a `.env` file to point to it.
+
+---
+
+## 🛠️ **Usage**
+
+1. **Run the Script**
+
+```bash
+python main.py
+```
+
+2. **Select Output Folders**
+
+- A GUI will appear, prompting you to:
+  - Select the **Render Output Folder**.
+  - Select the **EDL/OTIO Export Folder**.
+
+3. **DaVinci Resolve Integration**
+
+- The script will automatically:
+  - Load the current Resolve project.
+  - Export EDL/OTIO files.
+  - Render individual shots and the full cut.
+  - Save the rendered clips and EDLs to the selected folders.
+
+---
+
+## 🌐 **Environment Variables**
+
+The project uses environment variables to configure paths dynamically:
+
+- `PIPE_SCRIPTS`: Path to your script modules.
+  - Example: `D:\HecberryStuff\Dev\BetweenStudiosTools`
+- `PYTHONPATH`: Add DaVinci Resolve’s scripting path if needed.
+
+---
+
+## 💡 **Example Workflow**
+
+1. **Prepare DaVinci Resolve**
+   - Open DaVinci Resolve.
+   - Load your project.
+2. **Run the Script**
+
+```bash
+python main.py
+```
+
+3. **Select Folders**
+   - Choose folders for EDL/OTIO export and rendered clips.
+4. **Automated Processing**
+   - The script will:
+     - Export the EDL and OTIO files.
+     - Delete existing render jobs.
+     - Apply rendering settings.
+     - Render individual shots or the full cut.
+5. **Review the Output**
+   - EDLs and OTIO files will be saved in the export folder.
+   - Rendered clips will be saved in the output folder.
+
+---
+
+## 🛠️ **Contributing**
+
+1. **Fork the repository**.
+2. Create a new branch for your feature or bugfix:
+
+```bash
+git checkout -b feature-name
+```
+
+3. Make your changes and commit them:
+
+```bash
+git commit -m "Add new feature"
+```
+
+4. Push the branch:
+
+```bash
+git push origin feature-name
+```
+
+5. Open a **pull request**.
+
+---
+
+## 🐛 **Issues**
+
+If you encounter any issues or have feature suggestions, feel free to [open an issue](https://github.com/hesmoar/EditorialPublisher/issues).
+
+---
+
+## 📄 **License**
+
+This project is licensed under the MIT License – see the [LICENSE](LICENSE) file for details.
+
+---
+
+## 👥 **Author**
+
+**Hector S.**\
+[GitHub](https://github.com/hesmoar)\
+[LinkedIn](https://www.linkedin.com/in/your-profile)
 
 
-## Installation
-IN CONSTRUCTION
-
-## Usage
-For the `davinci_publisher_standalone.py` you just need to copy the script on Da Vinci Resolve python console and run the script and it should work out of the box.
 
 ## Roadmap
 1. [ ] Single shot render files should follow the naming convention stablished for the project version entity.
@@ -64,7 +190,3 @@ For the `davinci_publisher_standalone.py` you just need to copy the script on Da
    * [ ] Avid
 
 9. [ ] Investigate what would be the input for editorial from storyboard or animatic. Exports from storyboarder or toon boom storyboard. 
-
-
-## License
-This project is licensed under the MIT License.

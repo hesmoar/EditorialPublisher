@@ -6,7 +6,7 @@ from tkinter import filedialog
 
 pipe_scripts = os.getenv("PIPE_SCRIPTS_PATH")
 
-def add_scripts_to_path(base_path, subfolder="Editorial_Publisher\davinci_publisher_modular"):
+def add_scripts_to_path(base_path, subfolder=r"Editorial_Publisher\davinci_publisher_modular"):
     """Add the scripts path to sys.path if not already included."""
     full_path = os.path.join(base_path, subfolder)
 
@@ -61,7 +61,7 @@ def main():
     try:
         delete_existing_jobs(project)
         export_edl(project, export_directory)
-        render_jobs(project)
+        render_jobs(project, output_folder)
         print("Rendering completed succesfully")
     except Exception as e:
         print(f"An error occured: {e}")

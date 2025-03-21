@@ -1,4 +1,3 @@
-# render_utils.py
 import os
 from timeline_utils import get_timeline, get_clips_from_timeline, get_timeline_name
 from file_utils import get_unique_filename

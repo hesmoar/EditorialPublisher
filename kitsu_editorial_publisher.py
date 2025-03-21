@@ -3,20 +3,15 @@ import pprint
 import json
 import opentimelineio as otio
 import re
+from kitsu_project_context import select_project, get_project
 
 
-
-#test_edl = r"D:\HecberryStuff\PAINANI STUDIOS\1_Proyectos\Active\1_Animaorquesta\PipeTest\AO_PipeTest_A_v009.edl"
-example_file = r"D:\HecberryStuff\PAINANI STUDIOS\1_Proyectos\Active\1_Animaorquesta\PipeTest\AO_Animatic_OTIOtest.otio"
-test_edl = edl_file_path
-#print(test_edl)
-#regex_pattern = r"(AO)_(\d{4})-(\d{4})"
 regex_pattern = r"(\w+)_(\d{4})-(\d{4})"
 
 
 #This file will compare the info from the EDL with the information in Kitsu and update based on that. 
 
-def read_edl():
+def read_edl(file_path):
     """
     Reads an EDL (Edit Decision List) file and extracts shot information.
     This function reads an EDL file using the OpenTimelineIO (otio) library,
@@ -29,7 +24,7 @@ def read_edl():
             - timeframe_in (str): The start timecode of the shot.
             - timeframe_out (str): The end timecode of the shot.
     """
-    timeline = otio.adapters.read_from_file(test_edl)
+    timeline = otio.adapters.read_from_file(file_path)
     edl_shots = []
 
     for track in timeline.tracks:
@@ -46,7 +41,7 @@ def read_edl():
                                   "timeframe_in": clip_in, 
                                   "timeframe_out": clip_out
                                   })
-                #print(f"Match found for clip {clip_name}")
+                print(f"Match found for clip {clip_name}")
             else:
                 print(f"No match found for clip {clip_name}")
     return edl_shots
@@ -105,9 +100,9 @@ def get_project_shots():
 
 
 # This function compares the dictionary coming from the edl and the one from kitsu to see if the shot names are matching. 
-def compare_shots():
+def compare_shots(file_path):
     kitsu_shots = get_project_shots()
-    edl_shots = read_edl()
+    edl_shots = read_edl(file_path)
     shots_to_update = []
 
     for edl_shot in edl_shots:
@@ -149,9 +144,9 @@ def compare_shots():
     return shots_to_update
 
 
-def update_kitsu():
+def update_kitsu(file_path):
     #project = get_project()
-    shots_to_update = compare_shots()
+    shots_to_update = compare_shots(file_path)
 
     if file_path.endswith('.edl'):
         edl_shots = read_edl(file_path)
@@ -188,5 +183,3 @@ def update_kitsu():
             print(f"Failed to update shot {shot_name} in Kitsu: {e}")
 
 
-read_otio()
-#update_kitsu()

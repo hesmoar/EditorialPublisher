@@ -9,8 +9,8 @@ from tkinter import filedialog
 
 
 
-#EXPORT_DIRECTORY = r"D:\HecberryStuff\PAINANI STUDIOS\1_Proyectos\Active\1_Animaorquesta\PipeTest"
-#OUTPUT_FOLDER = r"D:\HecberryStuff\PAINANI STUDIOS\1_Proyectos\Active\1_Animaorquesta\PipeTest\RenderTest\Clips"
+EXPORT_DIRECTORY = r"D:\HecberryStuff\PAINANI STUDIOS\1_Proyectos\Active\1_Animaorquesta\PipeTest"
+OUTPUT_FOLDER = r"D:\HecberryStuff\PAINANI STUDIOS\1_Proyectos\Active\1_Animaorquesta\PipeTest\RenderTest\Clips"
 
 
 def get_current_project():
@@ -122,16 +122,22 @@ def single_shots_render_settings():
 
     render_jobs = []
     for clip in timeline.GetItemListInTrack("video", 1):
-        clip_start, clip_end = clip.GetSourceStartFrame(), clip.GetSourceEndFrame()
+        clip_start, clip_end = clip.GetStart(False), clip.GetEnd(False)
+
+        clip_start_adjusted = clip_start - 86400
+        clip_end_adjusted = clip_end - 86400
 
         #print(f"Clip: {clip_name} starts on {clip_start} and ends on {clip_end}")
-        if clip_start >= MarkIn and clip_end <= MarkOut:
+        if clip_start_adjusted >= MarkIn and clip_end_adjusted <= MarkOut:
             render_name = f"{clip.GetName()}_{timeline.GetName()}"
 
 
             project.SetRenderSettings({
                 "TargetDir": OUTPUT_FOLDER,
-                "CustomName": render_name
+                "CustomName": render_name,
+                "MarkIn": clip_start,
+                "MarkOut": clip_end - 1
+
             })
             render_job = project.AddRenderJob()
             render_jobs.append(render_job)
@@ -224,8 +230,8 @@ def render_jobs():
     jobs_to_render = get_unique_renderJob_name()
     print(f"Rendering jobs {jobs_to_render}")
     #print(f"Render jobs {single_shot_render_job} and {full_cut_render_job} created successfully.")
-    if jobs_to_render:
-        project.StartRendering(jobs_to_render)
+    #if jobs_to_render:
+    #    project.StartRendering(jobs_to_render)
 
 
 

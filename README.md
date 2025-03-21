@@ -28,7 +28,7 @@ The Editorial Publisher is a Python tool designed to automate the publication pr
 IN CONSTRUCTION
 
 ## Usage
-IN CONSTRUCTION
+For the `davinci_publisher_standalone.py` you just need to copy the script on Da Vinci Resolve python console and run the script and it should work out of the box.
 
 ## Roadmap
 1. [ ] Single shot render files should follow the naming convention stablished for the project version entity.

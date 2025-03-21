@@ -90,5 +90,5 @@ def render_jobs(project):
     jobs_to_render = get_unique_renderJob_name(project, OUTPUT_FOLDER)
     if jobs_to_render:
         print("Rendering current jobs please wait.")
-        project.StartRendering(jobs_to_render)
+        #project.StartRendering(jobs_to_render)
 

@@ -95,9 +95,6 @@ def get_project_shots():
 
     return kitsu_shots
 
-#This function should take the shots that where a match and have some differences in their timecode and update them in Kitsu
-#def update_kitsu():
-
 
 # This function compares the dictionary coming from the edl and the one from kitsu to see if the shot names are matching. 
 def compare_shots(file_path):
@@ -142,6 +139,7 @@ def compare_shots(file_path):
                     match_found = True
 
     return shots_to_update
+
 
 
 def update_kitsu(file_path):

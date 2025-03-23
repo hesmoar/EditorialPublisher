@@ -55,6 +55,13 @@ pip install -r requirements.txt
    ```bash
    C:\ProgramData\Blackmagic Design\DaVinci Resolve\Fusion\Scripts
    ```
+5. **Adjust Script values to your own project and pipeline needs**
+   - There are certain values that are currently specific for my project and pipeline setup but you can modify as needed. 
+      - Regex pattern for shot names found at the start of **kitsu_editorial_publisher.py**
+      - Render Preset selection, this is currently set to the first preset. You can find this inside **render_utils.py** in the following functions:
+         - single_shots_render_settings
+         - full_cut_render_settings
+      - Kitsu custom field "timeframe_in" and "timeframe_out" you can change this to whatever field you want to use inside of kitsu. You can find this in **kitsu_editorial_publisher.py**
 
 
 ## 💡 **Usage**

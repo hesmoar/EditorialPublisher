@@ -16,7 +16,7 @@ def add_scripts_to_path(base_path, subfolder=r"Editorial_Publisher\davinci_publi
     
     if full_path not in sys.path:
         sys.path.append(full_path)
-        print(f"Added path to sys.path: {full_path}")
+        print(f"Succesfully Added path to sys.path: {full_path}")
     else:
         print(f"Path already in sys.path: {full_path}")
 
@@ -59,7 +59,7 @@ def main():
     if not project:
         print("Failed to load current project.")
         sys.exit(1)
-    print(f"Succesfully loaded the get current project script: {project.GetName()}")
+    print(f"Succesfully loaded the get current Resolve project: {project.GetName()}")
     try:
         delete_existing_jobs(project)
         edl_file_path = export_edl(project, export_directory)

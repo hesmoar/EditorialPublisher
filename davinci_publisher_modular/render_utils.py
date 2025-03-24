@@ -114,11 +114,15 @@ def full_cut_render_settings(project, output_folder):
 
 
 
-def get_unique_renderJob_name(project, output_folder):
+def get_unique_renderJob_name(project, output_folder, render_single_shots=True, render_full_cut=True):
     """Ensure render job filenames are unique by checking existing ones and updating if necessary."""
     updated_jobs = []
-    single_shots_render_settings(project, output_folder)
-    full_cut_render_settings(project, output_folder)
+    if render_single_shots:
+        single_shots_render_settings(project, output_folder)
+    
+    if render_full_cut:
+        full_cut_render_settings(project, output_folder)
+
     for job in project.GetRenderJobList():
         job_filename = job.get("OutputFilename", "Unknown")
         job_folder = job.get("TargetDir", "Unknown")
@@ -152,12 +156,17 @@ def get_unique_renderJob_name(project, output_folder):
     return updated_jobs
 
 
-def render_jobs(project, output_folder: str) -> None:
+def render_jobs(project, output_folder: str, render_single_shots=True, render_full_cut=True) -> None:
     """Render all jobs after ensuring unique filenames."""
 
 
     get_timeline_marks(project)
-    jobs_to_render = get_unique_renderJob_name(project, output_folder)
+    jobs_to_render = get_unique_renderJob_name(
+        project,
+        output_folder,
+        render_single_shots=render_single_shots,
+        render_full_cut=render_full_cut
+    )
 
 
     if jobs_to_render:

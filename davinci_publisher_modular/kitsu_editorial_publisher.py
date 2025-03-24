@@ -9,21 +9,8 @@ from kitsu_project_context import select_project, get_project
 regex_pattern = r"(\w+)_(\d{4})-(\d{4})"
 
 
-#This file will compare the info from the EDL with the information in Kitsu and update based on that. 
-
 def read_edl(file_path):
-    """
-    Reads an EDL (Edit Decision List) file and extracts shot information.
-    This function reads an EDL file using the OpenTimelineIO (otio) library,
-    iterates through the timeline tracks and clips, and extracts shot names
-    and their timeframes. The extracted information is returned as a list
-    of dictionaries.
-    Returns:
-        list: A list of dictionaries, each containing:
-            - name (str): The name of the shot.
-            - timeframe_in (str): The start timecode of the shot.
-            - timeframe_out (str): The end timecode of the shot.
-    """
+
     timeline = otio.adapters.read_from_file(file_path)
     edl_shots = []
 
@@ -46,8 +33,9 @@ def read_edl(file_path):
                 print(f"No match found for clip {clip_name}")
     return edl_shots
 
-def read_otio():
-    timeline = otio.adapters.read_from_file(example_file)
+
+def read_otio(file_path):
+    timeline = otio.adapters.read_from_file(file_path)
     otio_shots = []
 
     for track in timeline.tracks:
@@ -69,15 +57,10 @@ def read_otio():
     return otio_shots
 
 
-
-
-#This function gets all the shots from a project in kitsu and creates a dictionarywith their name, timeframe_in and timeframe_out keys
 def get_project_shots():
     selected_project = select_project()
     project = gazu.project.get_project_by_name(selected_project)
     shots = gazu.shot.all_shots_for_project(project)
-
-    #pprint.pprint(shots)
 
     kitsu_shots = []
     for shot in shots:
@@ -96,7 +79,6 @@ def get_project_shots():
     return kitsu_shots
 
 
-# This function compares the dictionary coming from the edl and the one from kitsu to see if the shot names are matching. 
 def compare_shots(file_path):
     kitsu_shots = get_project_shots()
     edl_shots = read_edl(file_path)
@@ -143,7 +125,6 @@ def compare_shots(file_path):
 
 
 def update_kitsu(file_path):
-    #project = get_project()
     shots_to_update = compare_shots(file_path)
 
     if file_path.endswith('.edl'):

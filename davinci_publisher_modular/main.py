@@ -24,10 +24,10 @@ add_scripts_to_path(pipe_scripts)
 
 
 from project_utils import get_current_project, delete_existing_jobs
-from file_utils import export_edl
+from file_utils import export_edl, export_otio
 from render_utils import render_jobs, single_shots_render_settings, full_cut_render_settings
 from kitsu_auth import connect_to_kitsu
-from kitsu_editorial_publisher import read_edl, update_kitsu
+from kitsu_editorial_publisher import read_edl, read_otio, update_kitsu
 
 
 
@@ -62,12 +62,12 @@ def main():
     print(f"Succesfully loaded the get current Resolve project: {project.GetName()}")
     try:
         delete_existing_jobs(project)
-        edl_file_path = export_edl(project, export_directory)
+        otio_file_path = export_otio(project, export_directory)
         render_jobs(project, output_folder)
         print("Rendering completed succesfully")
         connect_to_kitsu()
-        read_edl(edl_file_path)
-        update_kitsu(edl_file_path)
+        read_otio(otio_file_path)
+        update_kitsu(otio_file_path)
 
     except Exception as e:
         print(f"An error occured: {e}")

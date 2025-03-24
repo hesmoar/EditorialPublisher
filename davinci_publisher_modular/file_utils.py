@@ -42,3 +42,28 @@ def export_edl(project, export_directory):
     except Exception as e:
         print(f"Error exporting timeline: {e}")
     return edlFilePath
+
+
+def export_otio(project, export_directory):
+    """Export an OTIO file with a unique filename"""
+    timeline = project.GetCurrentTimeline()
+    if not timeline:
+        print("No current timeline found.")
+        return False
+    
+    otio_name = get_timeline_name(project)
+    if not otio_name:
+        return None
+    
+    otioFilePath, _ = get_unique_filename(otio_name, export_directory, "otio")
+    if not otioFilePath:
+        return
+    
+    try:
+        if timeline.Export(otioFilePath, project.EXPORT_OTIO):
+            print(f"Timeline exported to {otioFilePath} succesfully.")
+        else:
+            print("Timeline export failed.")
+    except Exception as e:
+        print(f"Error exporting timeline: {e}")
+    return otioFilePath

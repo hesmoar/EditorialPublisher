@@ -25,7 +25,7 @@ add_scripts_to_path(pipe_scripts)
 
 from project_utils import get_current_project, delete_existing_jobs
 from file_utils import export_edl, export_otio
-from render_utils import render_jobs, single_shots_render_settings, full_cut_render_settings, render_section_settings
+from render_utils import render_jobs
 from kitsu_auth import connect_to_kitsu
 from kitsu_editorial_publisher import read_edl, read_otio, update_kitsu
 
@@ -65,9 +65,9 @@ def main():
         otio_file_path = export_otio(project, export_directory)
         render_jobs(project, output_folder)
         print("Rendering completed succesfully")
-        #connect_to_kitsu()
-        #read_otio(otio_file_path)
-        #update_kitsu(otio_file_path)
+        connect_to_kitsu()
+        read_otio(otio_file_path)
+        update_kitsu(otio_file_path)
 
     except Exception as e:
         print(f"An error occured: {e}")

@@ -1,6 +1,6 @@
 import os
 import pprint
-from timeline_utils import get_timeline, get_clips_from_timeline, get_timeline_name
+from timeline_utils import get_timeline, get_clips_from_timeline, get_timeline_name, get_timeline_markers, get_timeline_markInOut
 from file_utils import get_unique_filename
 from project_utils import get_current_project
 
@@ -9,19 +9,10 @@ section_cut_ranges = {}
 shot_cut_ranges = {}
 
 
-def get_timeline_marks(project):
+def get_markInOut(project):
     """Get and store the full cut frame range from the timeline."""
 
-    timeline = get_timeline(project)
-    if not timeline:
-        print("No current timeline found.") 
-        return []
-
-
-    MarkInOut = timeline.GetMarkInOut()
-    full_cut_markIn = MarkInOut.get("video", {}).get("in", 0)
-    full_cut_markOut = MarkInOut.get("video", {}).get("out", 0)
-
+    full_cut_markIn, full_cut_markOut = get_timeline_markInOut(project)
 
     section_cut_ranges["MarkIn"] = full_cut_markIn + 86400
     section_cut_ranges["MarkOut"] = full_cut_markOut + 86400
@@ -89,18 +80,13 @@ def full_cut_render_settings(project, output_folder):
     project.SetCurrentRenderMode(1)
     render_preset = next(iter(project.GetRenderPresetList()), "DefaultPreset")
     
-    timeline_markers = timeline.GetMarkers()
-    print("These are the markers on this timeline")
-    pprint.pprint(timeline_markers)
-
+    timeline_markers = get_timeline_markers(project)
     for key, value in timeline_markers.items():
         if value.get("color") == "Blue":
             start_frame = key
         elif value.get("color") == "Red":
             end_frame = key
 
-    #full_cut_ranges["MarkIn"] = start_frame
-    #full_cut_ranges["MarkOut"] = end_frame
     project_name = project.GetName()
     timeline_name = get_timeline_name(project)
     if not timeline_name:
@@ -123,7 +109,7 @@ def full_cut_render_settings(project, output_folder):
         print("Failed to create full cut render job")
     return full_cut_render_job, timeline_name
 
-def render_section_settings(project, output_folder):
+def section_render_settings(project, output_folder):
     
     timeline = get_timeline(project)
     if not timeline:
@@ -161,7 +147,7 @@ def get_unique_renderJob_name(project, output_folder):
     updated_jobs = []
     single_shots_render_settings(project, output_folder)
     full_cut_render_settings(project, output_folder)
-    render_section_settings(project, output_folder)
+    section_render_settings(project, output_folder)
     for job in project.GetRenderJobList():
         job_filename = job.get("OutputFilename", "Unknown")
         job_folder = job.get("TargetDir", "Unknown")
@@ -203,14 +189,13 @@ def render_jobs(project, output_folder: str) -> None:
     """Render all jobs after ensuring unique filenames."""
 
 
-    get_timeline_marks(project)
+    get_markInOut(project)
     jobs_to_render = get_unique_renderJob_name(project, output_folder)
-    jobs_to_render = full_cut_render_settings(project, output_folder)
 
 
     if jobs_to_render:
         print("Rendering current jobs please wait.")
-        #project.StartRendering(jobs_to_render)
+        project.StartRendering(jobs_to_render)
         print(full_cut_ranges)
 
 

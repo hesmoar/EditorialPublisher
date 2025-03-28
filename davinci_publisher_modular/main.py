@@ -25,7 +25,7 @@ add_scripts_to_path(pipe_scripts)
 
 from project_utils import get_current_project, delete_existing_jobs
 from file_utils import export_edl, export_otio
-from render_utils import render_jobs, single_shots_render_settings, full_cut_render_settings
+from render_utils import render_jobs
 from kitsu_auth import connect_to_kitsu
 from kitsu_editorial_publisher import read_edl, read_otio, update_kitsu
 

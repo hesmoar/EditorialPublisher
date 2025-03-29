@@ -226,6 +226,6 @@ def render_jobs(project, selected_render_preset, output_folder: str, render_sing
 
     if jobs_to_render:
         print("Rendering current jobs please wait.")
-        #project.StartRendering(jobs_to_render)
+        project.StartRendering(jobs_to_render)
 
 

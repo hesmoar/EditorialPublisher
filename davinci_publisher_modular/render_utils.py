@@ -214,6 +214,6 @@ def render_jobs(project, output_folder: str, render_single_shots=True, render_fu
 
     if jobs_to_render:
         print("Rendering current jobs please wait.")
-        project.StartRendering(jobs_to_render)
+        #project.StartRendering(jobs_to_render)
 
 

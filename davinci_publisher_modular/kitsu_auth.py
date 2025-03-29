@@ -17,4 +17,4 @@ def connect_to_kitsu():
         print("Login failed.")
 
 
-connect_to_kitsu()
+#connect_to_kitsu()

@@ -1,8 +1,9 @@
 import sys
 import os
+import tkinter as tk
 from PySide6.QtWidgets import (
-    QApplication, QMainWindow, QWidget, QVBoxLayout, QLabel, QPushButton, 
-    QCheckBox, QRadioButton, QButtonGroup, QFileDialog, QHBoxLayout
+    QApplication, QMainWindow, QWidget, QVBoxLayout, QLabel, QPushButton,
+    QCheckBox, QRadioButton, QButtonGroup, QFileDialog, QHBoxLayout, QGroupBox, QFrame, QSpacerItem, QSizePolicy
 )
 from PySide6.QtCore import Qt
 
@@ -13,14 +14,24 @@ class ResolvePublisherGUI(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Editorial Publisher Settings")
-        self.setGeometry(300, 200, 600, 400)
+        self.setGeometry(300, 200, 650, 450)
+
+        # Add Icon to the window 
+        #self.setWindowIcon(QIcon())
 
         # Central widget and layout
         central_widget = QWidget()
         self.setCentralWidget(central_widget)
-        layout = QVBoxLayout(central_widget)
+        main_layout = QVBoxLayout(central_widget)
+
+        main_layout.setContentsMargins(20, 20, 20, 20)
+        main_layout.setSpacing(15)
 
         # Directory Selection
+
+        dir_group = QGroupBox("Directory Selection")
+        dir_layout = QVBoxLayout(dir_group)
+
         self.export_dir_label = QLabel("OTIO export Directory: Not Selected")
         self.export_dir_button = QPushButton("Select OTIO export Directory")
         self.export_dir_button.clicked.connect(self.select_export_dir)
@@ -29,38 +40,44 @@ class ResolvePublisherGUI(QMainWindow):
         self.output_dir_button = QPushButton("Select Render Output Directory")
         self.output_dir_button.clicked.connect(self.select_output_dir)
 
-        layout.addWidget(self.export_dir_label)
-        layout.addWidget(self.export_dir_button)
-        layout.addWidget(self.output_dir_label)
-        layout.addWidget(self.output_dir_button)
+        dir_layout.addWidget(self.export_dir_label)
+        dir_layout.addWidget(self.export_dir_button)
+        dir_layout.addWidget(self.output_dir_label)
+        dir_layout.addWidget(self.output_dir_button)
 
         # Render Options
-        layout.addWidget(QLabel("Render Options:"))
+        render_group = QGroupBox("Render Options")
+        render_layout = QVBoxLayout(render_group)
 
         self.render_group = QButtonGroup()
-        self.single_shot_radio = QRadioButton("Single Shots Only")
-        self.section_cut_radio = QRadioButton("Section Render cut only")
-        self.full_cut_radio = QRadioButton("Full Cut Only")
-        self.all_radio = QRadioButton("All (Single + Section + Full Cut)")
+        self.single_shot_checkbox = QCheckBox("Single Shots Only")
+        self.section_cut_checkbox = QCheckBox("Section Render cut only")
+        self.full_cut_checkbox = QCheckBox("Full Cut Only")
+        #self.all_checkbox = QCheckBox("All (Single + Section + Full Cut)")
 
-        self.all_radio.setChecked(True)  # Default selection
+   
 
-        layout.addWidget(self.single_shot_radio)
-        layout.addWidget(self.section_cut_radio)
-        layout.addWidget(self.full_cut_radio)
-        layout.addWidget(self.all_radio)
+        #self.all_checkbox.setChecked(True)  # Default selection
+        self.single_shot_checkbox.setChecked(True)
+        self.full_cut_checkbox.setChecked(True)
 
-        self.render_group.addButton(self.single_shot_radio)
-        self.render_group.addButton(self.section_cut_radio)
-        self.render_group.addButton(self.full_cut_radio)
-        self.render_group.addButton(self.all_radio)
+        render_layout.addWidget(self.single_shot_checkbox)
+        render_layout.addWidget(self.section_cut_checkbox)
+        render_layout.addWidget(self.full_cut_checkbox)
+        #render_layout.addWidget(self.all_checkbox)
 
         # Checkboxes
+        checkbox_group = QGroupBox("Export Options")
+        checkbox_layout = QVBoxLayout(checkbox_group)
+
         self.export_otio_checkbox = QCheckBox("Export OTIO")
         self.upload_kitsu_checkbox = QCheckBox("Upload to Kitsu")
 
-        layout.addWidget(self.export_otio_checkbox)
-        layout.addWidget(self.upload_kitsu_checkbox)
+        self.export_otio_checkbox.setChecked(True)
+        self.upload_kitsu_checkbox.setChecked(True)
+
+        checkbox_layout.addWidget(self.export_otio_checkbox)
+        checkbox_layout.addWidget(self.upload_kitsu_checkbox)
 
         # Buttons
         button_layout = QHBoxLayout()
@@ -72,11 +89,85 @@ class ResolvePublisherGUI(QMainWindow):
 
         button_layout.addWidget(self.start_button)
         button_layout.addWidget(self.cancel_button)
-        layout.addLayout(button_layout)
+
 
         self.export_dir = ""
         self.output_dir = ""
         self.selections = {}
+
+        # Adding to main layout
+        main_layout.addWidget(dir_group)
+        main_layout.addWidget(render_group)
+        main_layout.addWidget(checkbox_group)
+
+        # Add some spacing
+        main_layout.addSpacerItem(QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding))
+
+        main_layout.addLayout(button_layout)
+
+                # Store paths and selections
+        #self.export_dir = ""
+        #self.output_dir = ""
+        #self.selections = {}
+
+        # Apply stylesheet for a modern look
+        self.apply_stylesheet()
+
+    def closeEvent(self, event):
+        print("Operation cancelled by User")
+        os._exit(0)
+    # ------------------------ STYLESHEET ------------------------
+    def apply_stylesheet(self):
+        """Apply stylesheet for modern look"""
+        self.setStyleSheet("""
+            QMainWindow {
+                background-color: #1e1e22;
+                color: #f0f0f0;
+            }
+            
+            QLabel {
+                font-size: 14px;
+                color: white;
+            }
+
+            QGroupBox {
+                font-size: 16px;
+                font-weight: bold;
+                color: #f0f0f0;
+                border: 1px solid #555;
+                border-radius: 8px;
+                margin-top: 15px;
+                padding: 15px;
+            }
+
+            QPushButton {
+                background-color: #28282e;
+                color: white;
+                font-size: 14px;
+                border-radius: 5px;
+                padding: 8px 12px;
+            }
+
+            QPushButton:hover {
+                background-color: #737373;
+            }
+
+            QRadioButton, QCheckBox {
+                font-size: 14px;
+                color: white;
+            }
+
+            QPushButton:disabled {
+                background-color: #555;
+                color: #aaa;
+            }
+
+            QLineEdit, QTextEdit {
+                background-color: #333;
+                color: white;
+                border: 1px solid #555;
+            }
+        """)
 
     # Select directory functions
     def select_export_dir(self):
@@ -84,32 +175,25 @@ class ResolvePublisherGUI(QMainWindow):
         dir_name = QFileDialog.getExistingDirectory(self, "Select OTIO Export Directory")
         if dir_name:
             self.export_dir = dir_name
-            self.export_dir_label.setText(f"Export Directory: {dir_name}")
+            self.export_dir_label.setText(f"OTIO Export Directory: {dir_name}")
 
     def select_output_dir(self):
         """Select the output directory."""
         dir_name = QFileDialog.getExistingDirectory(self, "Select Render Output Directory")
         if dir_name:
             self.output_dir = dir_name
-            self.output_dir_label.setText(f"Output Directory: {dir_name}")
+            self.output_dir_label.setText(f"Render Output Directory: {dir_name}")
 
     def get_selections(self):
         """Get the user's selections as a dictionary."""
-        render_option = "both"
-        if self.single_shot_radio.isChecked():
-            render_option = "single"
-        elif self.full_cut_radio.isChecked():
-            render_option = "full"
-        elif self.section_cut_radio.isChecked():
-            render_option = "section"
 
         self.selections = {
             "export_folder": self.export_dir,
             "output_folder": self.output_dir,
             "export_otio": self.export_otio_checkbox.isChecked(),
-            "render_single_shots": render_option == "single" or render_option == "both",
-            "render_section_cut": render_option == "section" or render_option == "both",
-            "render_full_cut": render_option == "full" or render_option == "both",
+            "render_single_shots": self.single_shot_checkbox.isChecked(),
+            "render_section_cut": self.section_cut_checkbox.isChecked(),
+            "render_full_cut": self.full_cut_checkbox.isChecked(),
             "update_kitsu": self.upload_kitsu_checkbox.isChecked()
         }
         return self.selections

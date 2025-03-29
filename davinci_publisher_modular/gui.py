@@ -39,18 +39,21 @@ class ResolvePublisherGUI(QMainWindow):
 
         self.render_group = QButtonGroup()
         self.single_shot_radio = QRadioButton("Single Shots Only")
+        self.section_cut_radio = QRadioButton("Section Render cut only")
         self.full_cut_radio = QRadioButton("Full Cut Only")
-        self.both_radio = QRadioButton("Both (Single + Full Cut)")
+        self.all_radio = QRadioButton("All (Single + Section + Full Cut)")
 
-        self.both_radio.setChecked(True)  # Default selection
+        self.all_radio.setChecked(True)  # Default selection
 
         layout.addWidget(self.single_shot_radio)
+        layout.addWidget(self.section_cut_radio)
         layout.addWidget(self.full_cut_radio)
-        layout.addWidget(self.both_radio)
+        layout.addWidget(self.all_radio)
 
         self.render_group.addButton(self.single_shot_radio)
+        self.render_group.addButton(self.section_cut_radio)
         self.render_group.addButton(self.full_cut_radio)
-        self.render_group.addButton(self.both_radio)
+        self.render_group.addButton(self.all_radio)
 
         # Checkboxes
         self.export_otio_checkbox = QCheckBox("Export OTIO")
@@ -97,12 +100,15 @@ class ResolvePublisherGUI(QMainWindow):
             render_option = "single"
         elif self.full_cut_radio.isChecked():
             render_option = "full"
+        elif self.section_cut_radio.isChecked():
+            render_option = "section"
 
         self.selections = {
             "export_folder": self.export_dir,
             "output_folder": self.output_dir,
             "export_otio": self.export_otio_checkbox.isChecked(),
             "render_single_shots": render_option == "single" or render_option == "both",
+            "render_section_cut": render_option == "section" or render_option == "both",
             "render_full_cut": render_option == "full" or render_option == "both",
             "update_kitsu": self.upload_kitsu_checkbox.isChecked()
         }

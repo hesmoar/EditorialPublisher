@@ -40,6 +40,7 @@ def main():
     output_folder = selections.get("output_folder")
     should_export_otio = selections.get("export_otio")
     render_single_shots = selections.get("render_single_shots")
+    render_section_cut = selections.get("section_render_cut")
     render_full_cut = selections.get("render_full_cut")
     should_update_kitsu = selections.get("update_kitsu")
 
@@ -48,6 +49,7 @@ def main():
     print(f"Output Folder: {output_folder}")
     print(f"Export OTIO: {should_export_otio}")
     print(f"Render Single Shots: {render_single_shots}")
+    print(f"Section render cut: {render_section_cut}")
     print(f"Render Full Cut: {render_full_cut}")
     print(f"Update Kitsu: {should_update_kitsu}")
 
@@ -71,6 +73,7 @@ def main():
             project,
             output_folder,
             render_single_shots=selections.get("render_single_shots", True),
+            render_section_cut=selections.get("render_section_cut", True),
             render_full_cut=selections.get("render_full_cut", True)
         )
         #if render_single_shots:

@@ -3,6 +3,7 @@ import os
 
 
 pipe_scripts = os.getenv("PIPE_SCRIPTS_PATH")
+render_presets = []
 
 def add_scripts_to_path(base_path, subfolder=r"Editorial_Publisher\davinci_publisher_modular"):
     """Add the scripts path to sys.path if not already included."""
@@ -24,16 +25,34 @@ add_scripts_to_path(pipe_scripts)
 from gui import run_gui
 from project_utils import get_current_project, delete_existing_jobs
 from file_utils import export_edl, export_otio
-from render_utils import render_jobs, single_shots_render_settings, full_cut_render_settings
+from render_utils import render_jobs, single_shots_render_settings, full_cut_render_settings, get_render_presets
 from kitsu_auth import connect_to_kitsu
 from kitsu_editorial_publisher import read_edl, read_otio, update_kitsu
 
 
 def main():
     """Main function to run the script with GUI selections"""
-    
+    # Get current project
+    project = get_current_project(app)
+    if not project:
+        print("Failed to load current project.")
+        sys.exit(1)
+    print(f"Succesfully loaded the get current Resolve project: {project.GetName()}")
+
+    # Get render presets to populate GUI
+    try:
+        render_presets_dict = get_render_presets(project)
+        if render_presets_dict:
+            print("Succesfully loaded project render presets")
+        for key, value in render_presets_dict.items():
+            render_presets.append(value)
+    except Exception as e:
+        print(f"Failed to load render presets: {e}")
+        sys.exit(1)
+
+
     # Run the GUI and get the selections
-    selections = run_gui()
+    selections = run_gui(render_presets)
 
     # Extract the selections
     export_folder = selections.get("export_folder")
@@ -42,6 +61,7 @@ def main():
     render_single_shots = selections.get("render_single_shots")
     render_section_cut = selections.get("section_render_cut")
     render_full_cut = selections.get("render_full_cut")
+    selected_render_preset = selections.get("selected_render_preset")
     should_update_kitsu = selections.get("update_kitsu")
 
     print("\nSelected Options:")
@@ -51,19 +71,14 @@ def main():
     print(f"Render Single Shots: {render_single_shots}")
     print(f"Section render cut: {render_section_cut}")
     print(f"Render Full Cut: {render_full_cut}")
+    print(f"Selected Render preset: {selected_render_preset}")
     print(f"Update Kitsu: {should_update_kitsu}")
 
-    # Get current project
-    project = get_current_project(app)
-    if not project:
-        print("Failed to load current project.")
-        sys.exit(1)
-    print(f"Succesfully loaded the get current Resolve project: {project.GetName()}")
 
     try:
         # Delete existing jobs
         delete_existing_jobs(project)
-
+        get_render_presets(project)
         # Export OTIO if selected
         if should_export_otio:
             export_otio(project, export_folder)
@@ -71,6 +86,7 @@ def main():
         # Render single shots, full cut, or both
         render_jobs(
             project,
+            selected_render_preset,
             output_folder,
             render_single_shots=selections.get("render_single_shots", True),
             render_section_cut=selections.get("render_section_cut", True),

@@ -61,7 +61,7 @@ def export_otio(project, export_directory):
     
     try:
         if timeline.Export(otioFilePath, project.EXPORT_OTIO):
-            print(f"Timeline exported to {otioFilePath} succesfully.")
+            print(f"SUCCESFULLY EXPORTED TIMELINE TO: {otioFilePath}")
         else:
             print("Timeline export failed.")
     except Exception as e:

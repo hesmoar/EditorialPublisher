@@ -10,6 +10,8 @@ section_cut_ranges = {}
 shot_cut_ranges = {}
 
 
+
+
 def get_timeline_marks(project):
     """Get and store the full cut frame range from the timeline."""
 
@@ -21,8 +23,13 @@ def get_timeline_marks(project):
 
     return full_cut_markIn, full_cut_markOut
 
+def get_render_presets(project):
+    preset_names = project.GetRenderPresets()
 
-def single_shots_render_settings(project, output_folder):
+    return preset_names
+
+
+def single_shots_render_settings(project, output_folder, selected_render_preset):
     """Set render settings for individual shots and create render jobs."""
     timeline = get_timeline(project)
     if not timeline:
@@ -30,7 +37,8 @@ def single_shots_render_settings(project, output_folder):
         return []
 
     project.SetCurrentRenderMode(1)
-    render_preset = next(iter(project.GetRenderPresetList()), "DefaultPreset")
+    #render_preset = next(iter(project.GetRenderPresetList()), "DefaultPreset")
+    render_preset = project.LoadRenderPreset(selected_render_preset)
     MarkInOut = timeline.GetMarkInOut()
     MarkIn = MarkInOut.get("video", {}).get("in", 0)
     MarkOut = MarkInOut.get("video", {}).get("out", 0)
@@ -61,7 +69,7 @@ def single_shots_render_settings(project, output_folder):
                     "MarkIn": clip_start,
                     "MarkOut": clip_end - 1
             }
-                print(f"Added render job for clip: {clip.GetName()}, Job ID: {render_job}, Render Preset: {render_preset}")
+                print(f"Added render job for clip: {clip.GetName()}, Job ID: {render_job}, Render Preset: {selected_render_preset}")
                 render_jobs.append(render_job)
             else:
                 print(f"Failed to add render job for clip: {clip.GetName()}")
@@ -70,7 +78,7 @@ def single_shots_render_settings(project, output_folder):
     return render_jobs
 
 
-def full_cut_render_settings(project, output_folder):
+def full_cut_render_settings(project, output_folder, selected_render_preset):
     """Set render settings for full cut and create render job."""
 
     timeline = get_timeline(project)
@@ -79,7 +87,8 @@ def full_cut_render_settings(project, output_folder):
         return []
 
     project.SetCurrentRenderMode(1)
-    render_preset = next(iter(project.GetRenderPresetList()), "DefaultPreset")
+    #render_preset = next(iter(project.GetRenderPresetList()), "DefaultPreset")
+    render_preset = project.LoadRenderPreset(selected_render_preset)
 
     timeline_markers = get_timeline_markers(project)
     for key, value in timeline_markers.items():
@@ -106,13 +115,13 @@ def full_cut_render_settings(project, output_folder):
             "MarkIn": start_frame + 86400,
             "MarkOut": end_frame + 86400
         }
-        print(f"Added full cut render job {timeline_name}, Job ID: {full_cut_render_job}, Render Preset: {render_preset}")
+        print(f"Added full cut render job {timeline_name}, Job ID: {full_cut_render_job}, Render Preset: {selected_render_preset}")
     else: 
         print("Failed to create full cut render job")
     return full_cut_render_job, timeline_name
 
 
-def section_render_settings(project, output_folder):
+def section_render_settings(project, output_folder, selected_render_preset):
     
     timeline = get_timeline(project)
     if not timeline:
@@ -120,7 +129,8 @@ def section_render_settings(project, output_folder):
         return []
 
     project.SetCurrentRenderMode(1)
-    render_preset = next(iter(project.GetRenderPresetList()), "DefaultPreset")
+    #render_preset = next(iter(project.GetRenderPresetList()), "DefaultPreset")
+    render_preset = project.LoadRenderPreset(selected_render_preset)
 
     MarkIn = section_cut_ranges["MarkIn"]
     MarkOut = section_cut_ranges["MarkOut"]
@@ -143,23 +153,23 @@ def section_render_settings(project, output_folder):
             "MarkIn": MarkIn,
             "MarkOut": MarkOut
         }
-        print(f"Added full cut render job {timeline_name}, Job ID: {section_render_job}, Render Preset: {render_preset}")
+        print(f"Added full cut render job {timeline_name}, Job ID: {section_render_job}, Render Preset: {selected_render_preset}")
     else: 
         print("Failed to create full cut render job")
     return section_render_job
 
 
-def get_unique_renderJob_name(project, output_folder, render_single_shots=True, render_full_cut=True, render_section_cut=True):
+def get_unique_renderJob_name(project, selected_render_preset, output_folder, render_single_shots=True, render_full_cut=True, render_section_cut=True):
     """Ensure render job filenames are unique by checking existing ones and updating if necessary."""
     updated_jobs = []
     if render_single_shots:
-        single_shots_render_settings(project, output_folder)
+        single_shots_render_settings(project, output_folder, selected_render_preset)
     
     if render_full_cut:
-        full_cut_render_settings(project, output_folder)
+        full_cut_render_settings(project, output_folder, selected_render_preset)
     
     if render_section_cut:
-        section_render_settings(project, output_folder)
+        section_render_settings(project, output_folder, selected_render_preset)
 
     for job in project.GetRenderJobList():
         job_filename = job.get("OutputFilename", "Unknown")
@@ -198,17 +208,19 @@ def get_unique_renderJob_name(project, output_folder, render_single_shots=True, 
     return updated_jobs
 
 
-def render_jobs(project, output_folder: str, render_single_shots=True, render_full_cut=True, render_section_cut=True) -> None:
+def render_jobs(project, selected_render_preset, output_folder: str, render_single_shots=True, render_full_cut=True, render_section_cut=True) -> None:
     """Render all jobs after ensuring unique filenames."""
 
 
     get_timeline_marks(project)
     jobs_to_render = get_unique_renderJob_name(
         project,
+        selected_render_preset,
         output_folder,
         render_single_shots=render_single_shots,
         render_section_cut=render_section_cut,
-        render_full_cut=render_full_cut
+        render_full_cut=render_full_cut,
+        
     )
 
 

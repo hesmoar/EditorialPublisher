@@ -3,15 +3,20 @@ import os
 import tkinter as tk
 from PySide6.QtWidgets import (
     QApplication, QMainWindow, QWidget, QVBoxLayout, QLabel, QPushButton,
-    QCheckBox, QRadioButton, QButtonGroup, QFileDialog, QHBoxLayout, QGroupBox, QFrame, QSpacerItem, QSizePolicy
+    QCheckBox, QRadioButton, QButtonGroup, QFileDialog, QHBoxLayout, QGroupBox, QFrame, QSpacerItem, QSizePolicy, QComboBox
 )
 from PySide6.QtCore import Qt
+from render_utils import get_render_presets
 
+
+
+list = ["Preset_1", "Preset_2", "Preset_3"]
+#list = render_presets
 
 class ResolvePublisherGUI(QMainWindow):
     """GUI for selecting export and render options"""
 
-    def __init__(self):
+    def __init__(self, presets):
         super().__init__()
         self.setWindowTitle("Editorial Publisher Settings")
         self.setGeometry(300, 200, 650, 450)
@@ -47,24 +52,33 @@ class ResolvePublisherGUI(QMainWindow):
 
         # Render Options
         render_group = QGroupBox("Render Options")
-        render_layout = QVBoxLayout(render_group)
+        render_layout = QHBoxLayout(render_group)
 
+        # Left Column
+        left_layout = QVBoxLayout()
         self.render_group = QButtonGroup()
         self.single_shot_checkbox = QCheckBox("Single Shots Only")
         self.section_cut_checkbox = QCheckBox("Section Render cut only")
         self.full_cut_checkbox = QCheckBox("Full Cut Only")
-        #self.all_checkbox = QCheckBox("All (Single + Section + Full Cut)")
+        left_layout.addWidget(self.single_shot_checkbox)
+        left_layout.addWidget(self.section_cut_checkbox)
+        left_layout.addWidget(self.full_cut_checkbox)
 
-   
-
-        #self.all_checkbox.setChecked(True)  # Default selection
-        self.single_shot_checkbox.setChecked(True)
+        self.single_shot_checkbox.setChecked(True) # Default selections
         self.full_cut_checkbox.setChecked(True)
 
-        render_layout.addWidget(self.single_shot_checkbox)
-        render_layout.addWidget(self.section_cut_checkbox)
-        render_layout.addWidget(self.full_cut_checkbox)
-        #render_layout.addWidget(self.all_checkbox)
+        # Right Column
+        right_layout = QVBoxLayout()
+        self.preset_dropdown = QComboBox()
+        self.preset_dropdown.addItems(presets)
+        right_layout.addWidget(QLabel("Select Render Preset:"))
+        right_layout.addWidget(self.preset_dropdown)
+
+        #self.update_preset_dropdown()
+
+
+        render_layout.addLayout(left_layout)
+        render_layout.addLayout(right_layout)
 
         # Checkboxes
         checkbox_group = QGroupBox("Export Options")
@@ -113,9 +127,9 @@ class ResolvePublisherGUI(QMainWindow):
         # Apply stylesheet for a modern look
         self.apply_stylesheet()
 
-    def closeEvent(self, event):
-        print("Operation cancelled by User")
-        os._exit(0)
+    #def closeEvent(self, event):
+    #    print("Operation cancelled by User")
+    #    os._exit(0)
     # ------------------------ STYLESHEET ------------------------
     def apply_stylesheet(self):
         """Apply stylesheet for modern look"""
@@ -167,7 +181,13 @@ class ResolvePublisherGUI(QMainWindow):
                 color: white;
                 border: 1px solid #555;
             }
+            
         """)
+
+    #def update_preset_dropdown(self):
+    #    presets = render_presets
+    #    self.preset_dropdown.clear()
+    #    self.preset_dropdown.addItems(presets)
 
     # Select directory functions
     def select_export_dir(self):
@@ -194,6 +214,7 @@ class ResolvePublisherGUI(QMainWindow):
             "render_single_shots": self.single_shot_checkbox.isChecked(),
             "render_section_cut": self.section_cut_checkbox.isChecked(),
             "render_full_cut": self.full_cut_checkbox.isChecked(),
+            "selected_render_preset": self.preset_dropdown.currentText(),
             "update_kitsu": self.upload_kitsu_checkbox.isChecked()
         }
         return self.selections
@@ -215,10 +236,10 @@ class ResolvePublisherGUI(QMainWindow):
         self.close()
 
 
-def run_gui():
+def run_gui(render_presets):
     """Function to run the GUI and return the user selections."""
     app = QApplication(sys.argv)
-    window = ResolvePublisherGUI()
+    window = ResolvePublisherGUI(render_presets)
     window.show()
     app.exec()
 

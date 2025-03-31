@@ -10,9 +10,6 @@ from render_utils import get_render_presets
 
 
 
-list = ["Preset_1", "Preset_2", "Preset_3"]
-#list = render_presets
-
 class ResolvePublisherGUI(QMainWindow):
     """GUI for selecting export and render options"""
 

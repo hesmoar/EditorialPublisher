@@ -2,6 +2,7 @@
 import os
 import pprint
 from project_utils import get_current_project
+import pprint
 
 def get_timeline(project):
     """Get the current timeline of the project."""

@@ -1,53 +1,30 @@
-# Editorial Publisher
+# Core Libraries
+gazu==0.10.29
+OpenTimelineIO==0.17.0
+OpenTimelineIO-Plugins==0.17.0
+PySide6==6.8.2.1
+PySide6_Addons==6.8.2.1
+PySide6_Essentials==6.8.2.1
+python-dotenv==1.0.1
+python-engineio==4.11.2
+python-socketio==5.12.1
+requests==2.32.3
+shiboken6==6.8.2.1
 
-THIS IS STILL WORK IN PROGRESS 
+# OTIO adapters
+pyaaf2==1.7.1
+otio-aaf-adapter==1.0.0
+otio-ale-adapter==1.0.0
+otio-burnins-adapter==1.0.0
+otio-cmx3600-adapter==1.0.0
+otio-fcp-adapter==1.0.0
+otio-fcpx-xml-adapter==1.0.0
+otio-hls-playlist-adapter==1.0.0
+otio-maya-sequencer-adapter==1.0.0
+otio-svg-adapter==1.0.0
+otio-xges-adapter==1.0.0
 
-This project contains tools for automating tasks in DaVinci Resolve, such as exporting EDL files and configuring render settings. And importing the edl and shots into Kitsu.
+# Python Version compatibility
+python = "3.13"
 
-## Requirements
 
-- DaVinci Resolve
-- Python 3.x
-- DaVinci Resolve API
-
-## Installation
-
-1. Clone the repository:
-    ```sh
-    git clone https://github.com/yourusername/Editorial_Publisher.git
-    cd Editorial_Publisher
-    ```
-
-2. Install the required Python packages:
-    ```sh
-    pip install -r requirements.txt
-    ```
-
-## Usage
-
-### DaVinci EDL Exporter
-
-This script exports the current timeline in DaVinci Resolve to an EDL file.
-
-1. Define the export directory in the script:
-    ```python
-    export_directory = "C:/Users/username/Desktop/Exported_Timelines"
-    ```
-
-2. Run the script:
-    ```sh
-    python DaVinci_edl_Exporter.py
-    ```
-
-### DaVinci Rendering
-
-This script configures and starts a render job in DaVinci Resolve using the first available render preset.
-
-1. Run the script:
-    ```sh
-    python DaVinciRendering.py
-    ```
-
-## License
-
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.

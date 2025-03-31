@@ -2,6 +2,9 @@
 import os
 from timeline_utils import get_timeline_name
 
+#renders_to_publish = []
+
+
 def get_unique_filename(base_name, directory, extension=""):
     """Generate a unique filename with an incremental version number."""
     if not os.path.exists(directory):
@@ -17,6 +20,7 @@ def get_unique_filename(base_name, directory, extension=""):
 
     version = max(existing_versions, default=0) + 1
     filename = f"{base_name}_v{version:03d}{extension}"
+    full_file_path = os.path.join(directory, filename)
     return os.path.join(directory, filename), filename
 
 def export_edl(project, export_directory):
@@ -61,7 +65,7 @@ def export_otio(project, export_directory):
     
     try:
         if timeline.Export(otioFilePath, project.EXPORT_OTIO):
-            print(f"Timeline exported to {otioFilePath} succesfully.")
+            print(f"SUCCESFULLY EXPORTED TIMELINE TO: {otioFilePath}")
         else:
             print("Timeline export failed.")
     except Exception as e:

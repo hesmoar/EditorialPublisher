@@ -3,10 +3,13 @@ import pprint
 import json
 import opentimelineio as otio
 import re
+import os
 from kitsu_project_context import select_project, get_project
+from render_utils import renders_to_publish
 
 
 regex_pattern = r"(\w+)_(\d{4})-(\d{4})"
+selected_project_shots = []
 
 
 def read_edl(file_path):
@@ -75,6 +78,7 @@ def get_project_shots():
                             "timeframe_in": shot_time_in, 
                             "timeframe_out": shot_time_out, 
                             "id": shot_id})
+        selected_project_shots.append(shot)
 
     return kitsu_shots
 
@@ -122,6 +126,41 @@ def compare_shots(file_path):
 
     return shots_to_update
 
+def get_review_status():
+    return next((status for status in gazu.task.all_task_statuses() if status.get("short_name") == 'wfa'), None)
+
+
+def files_to_publish(description):
+
+    pending_status = get_review_status()
+    published_files = renders_to_publish
+    kitsu_shots = selected_project_shots
+
+
+    for file in published_files:
+        filename = os.path.basename(file)
+        match = re.search(regex_pattern, filename)
+        print(f"These are the filenames {filename}")
+
+        if match:
+            shot_name_from_file = match.group(3)
+
+            shot = next((s for s in kitsu_shots if s.get("name") == shot_name_from_file), None)
+
+            if shot:
+
+                #print(f"Found the perfect match on render {shot_name_from_file} and kitsu {shot.get("name")}")
+                shot_task = gazu.task.all_tasks_for_shot(shot)
+
+                for shottask in shot_task:
+                    if shottask.get("task_type_name") == "Storyboard": # This should ideally be determined by the timeline name
+                        #print(f"THIS IS THE FILE PATH: {file}")
+                        published_preview = gazu.task.publish_preview(task=shottask, 
+                        task_status=pending_status, 
+                        comment=description,
+                        preview_file_path=file
+                        )
+                        pprint.pprint(published_preview)
 
 
 def update_kitsu(file_path):
@@ -136,9 +175,9 @@ def update_kitsu(file_path):
         return
 
     if not shots_to_update:
-        print("No shots to update. Everything is up to date.")
+        print("No shots timecode change detected. Everything is up to date.")
         return
-    
+
     for shot in shots_to_update:
         shot_name = shot.get("name")
         shot_id = shot.get("id")
@@ -160,5 +199,7 @@ def update_kitsu(file_path):
             print(f"Shot {shot_name} updated successfully")
         except Exception as e:
             print(f"Failed to update shot {shot_name} in Kitsu: {e}")
+
+
 
 

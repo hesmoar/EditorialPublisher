@@ -2,6 +2,9 @@
 import os
 from timeline_utils import get_timeline_name
 
+#renders_to_publish = []
+
+
 def get_unique_filename(base_name, directory, extension=""):
     """Generate a unique filename with an incremental version number."""
     if not os.path.exists(directory):
@@ -17,6 +20,9 @@ def get_unique_filename(base_name, directory, extension=""):
 
     version = max(existing_versions, default=0) + 1
     filename = f"{base_name}_v{version:03d}{extension}"
+    full_file_path = os.path.join(directory, filename)
+    #renders_to_publish.append(full_file_path)
+    #print(f"These are all the renders we need to publish: {renders_to_publish}")
     return os.path.join(directory, filename), filename
 
 def export_edl(project, export_directory):

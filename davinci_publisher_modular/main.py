@@ -25,9 +25,9 @@ add_scripts_to_path(pipe_scripts)
 from gui import run_gui
 from project_utils import get_current_project, delete_existing_jobs
 from file_utils import export_otio
-from render_utils import render_jobs, get_render_presets
+from render_utils import render_jobs, get_render_presets, get_render_status
 from kitsu_auth import connect_to_kitsu
-from kitsu_editorial_publisher import read_edl, read_otio, update_kitsu
+from kitsu_editorial_publisher import read_edl, read_otio, update_kitsu, files_to_publish
 
 
 def main():
@@ -92,18 +92,15 @@ def main():
             render_section_cut=selections.get("render_section_cut", True),
             render_full_cut=selections.get("render_full_cut", True)
         )
-        #if render_single_shots:
-            #single_shots_render_settings(project, output_folder)
-
-        #if render_full_cut:
-            #full_cut_render_settings(project, output_folder)
 
         # Update on Kitsu if selected
         if should_update_kitsu:
+            get_render_status(project)
             connect_to_kitsu()
             otio_file_path = export_otio(project, export_folder)
             read_otio(otio_file_path)
             update_kitsu(otio_file_path)
+            files_to_publish()
 
         print("Process completed successfully!")
 

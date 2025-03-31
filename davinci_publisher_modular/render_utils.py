@@ -1,5 +1,6 @@
 import os
 import pprint
+import time
 from timeline_utils import get_timeline, get_clips_from_timeline, get_timeline_name, get_timeline_markers, get_timeline_markInOut
 from file_utils import get_unique_filename
 from project_utils import get_current_project
@@ -9,6 +10,7 @@ full_cut_ranges = {}
 section_cut_ranges = {}
 shot_cut_ranges = {}
 
+renders_to_publish = []
 
 
 
@@ -46,7 +48,7 @@ def single_shots_render_settings(project, output_folder, selected_render_preset)
     render_jobs = []
     for clip in get_clips_from_timeline(project):
         clip_start, clip_end = clip.GetStart(False), clip.GetEnd(False)
-        #print(f"Shot {clip.GetName()} start time: {clip_start}, end time: {clip_end}")
+
         
         clip_start_adjusted = clip_start - 86400
         clip_end_adjusted = clip_end - 86400
@@ -134,7 +136,7 @@ def section_render_settings(project, output_folder, selected_render_preset):
 
     MarkIn = section_cut_ranges["MarkIn"]
     MarkOut = section_cut_ranges["MarkOut"]
-    print(MarkIn, MarkOut)
+    #print(MarkIn, MarkOut)
 
     project_name = project.GetName()
     timeline_name = get_timeline_name(project)
@@ -211,7 +213,6 @@ def get_unique_renderJob_name(project, selected_render_preset, output_folder, re
 def render_jobs(project, selected_render_preset, output_folder: str, render_single_shots=True, render_full_cut=True, render_section_cut=True) -> None:
     """Render all jobs after ensuring unique filenames."""
 
-
     get_timeline_marks(project)
     jobs_to_render = get_unique_renderJob_name(
         project,
@@ -222,10 +223,39 @@ def render_jobs(project, selected_render_preset, output_folder: str, render_sing
         render_full_cut=render_full_cut,
         
     )
+    
 
 
     if jobs_to_render:
         print("Rendering current jobs please wait.")
+        #print(f"THese are the jobs to render: {jobs_to_render}")
+
+        published_renders = project.GetRenderJobList()
+        for job in published_renders:
+            render_path = job.get("TargetDir")
+            render_file = job.get("OutputFilename")
+            #full_render_path = render_path + render_file
+            full_render_path = os.path.join(render_path, render_file)
+            renders_to_publish.append(full_render_path)
+
+        #pprint.pprint(renders_to_publish)
         project.StartRendering(jobs_to_render)
+    return jobs_to_render
+
+def get_render_status(project, delay=5):
+
+    renders_in_queue = project.GetRenderJobList()
+
+    while project.IsRenderingInProgress():
+        print("Rendering is in progress")
+
+        for render in renders_in_queue:
+            job_status = project.GetRenderJobStatus(render)
+            print(f"Job {render.get("RenderJobName")} status {job_status}")
+
+        time.sleep(delay)
+    
+    print("Rendering Complete")
+    
 
 

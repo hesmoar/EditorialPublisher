@@ -37,7 +37,7 @@ def main():
     if not project:
         print("Failed to load current project.")
         sys.exit(1)
-    print(f"Succesfully loaded the get current Resolve project: {project.GetName()}")
+    print(f"Succesfully loaded the current Resolve project: {project.GetName()}")
 
     # Get render presets to populate GUI
     try:
@@ -63,6 +63,7 @@ def main():
     render_full_cut = selections.get("render_full_cut")
     selected_render_preset = selections.get("selected_render_preset")
     should_update_kitsu = selections.get("update_kitsu")
+    description = selections.get("description")
 
     print("\nSelected Options:")
     print(f"Export Folder: {export_folder}")
@@ -72,6 +73,7 @@ def main():
     print(f"Section render cut: {render_section_cut}")
     print(f"Render Full Cut: {render_full_cut}")
     print(f"Selected Render preset: {selected_render_preset}")
+    print(f"Description: {description}")
     print(f"Update Kitsu: {should_update_kitsu}")
 
 
@@ -93,6 +95,7 @@ def main():
             render_full_cut=selections.get("render_full_cut", True)
         )
 
+
         # Update on Kitsu if selected
         if should_update_kitsu:
             get_render_status(project)
@@ -100,7 +103,7 @@ def main():
             otio_file_path = export_otio(project, export_folder)
             read_otio(otio_file_path)
             update_kitsu(otio_file_path)
-            files_to_publish()
+            files_to_publish(description)
 
         print("Process completed successfully!")
 

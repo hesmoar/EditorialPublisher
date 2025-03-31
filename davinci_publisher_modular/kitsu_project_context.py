@@ -53,3 +53,15 @@ def select_project():
     print(f"You selected the following project {selected_project_name}")
     return selected_project_name
 
+
+def get_edit_info(selected_project_name):
+    project_edits = gazu.edit.all_edits_for_project(selected_project_name)
+    if project_edits:
+        print(f"edits loaded succesfully")
+        for edit in project_edits:
+            edit_url = gazu.edit.get_edit_url(edit)
+            print(edit_url) 
+
+        #pprint.pprint(project_edits))
+    else:
+        print("No edit here")

@@ -3,7 +3,7 @@ import os
 import tkinter as tk
 from PySide6.QtWidgets import (
     QApplication, QMainWindow, QWidget, QVBoxLayout, QLabel, QPushButton,
-    QCheckBox, QRadioButton, QButtonGroup, QFileDialog, QHBoxLayout, QGroupBox, QFrame, QSpacerItem, QSizePolicy, QComboBox
+    QCheckBox, QRadioButton, QButtonGroup, QFileDialog, QHBoxLayout, QGroupBox, QFrame, QSpacerItem, QSizePolicy, QComboBox, QTextEdit
 )
 from PySide6.QtCore import Qt
 from render_utils import get_render_presets
@@ -93,6 +93,18 @@ class ResolvePublisherGUI(QMainWindow):
         checkbox_layout.addWidget(self.export_otio_checkbox)
         checkbox_layout.addWidget(self.upload_kitsu_checkbox)
 
+        # Comment
+        comment_group = QGroupBox("Preview Comment")
+        comment_layout = QVBoxLayout(comment_group)
+
+        self.comment_label = QLabel("Add a description for the shot")
+
+        self.comment = QTextEdit(self)
+
+        comment_layout.addWidget(self.comment_label)
+        comment_layout.addWidget(self.comment)
+
+
         # Buttons
         button_layout = QHBoxLayout()
         self.start_button = QPushButton("Start")
@@ -113,6 +125,7 @@ class ResolvePublisherGUI(QMainWindow):
         main_layout.addWidget(dir_group)
         main_layout.addWidget(render_group)
         main_layout.addWidget(checkbox_group)
+        main_layout.addWidget(comment_group)
 
         # Add some spacing
         main_layout.addSpacerItem(QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding))
@@ -215,7 +228,8 @@ class ResolvePublisherGUI(QMainWindow):
             "render_section_cut": self.section_cut_checkbox.isChecked(),
             "render_full_cut": self.full_cut_checkbox.isChecked(),
             "selected_render_preset": self.preset_dropdown.currentText(),
-            "update_kitsu": self.upload_kitsu_checkbox.isChecked()
+            "update_kitsu": self.upload_kitsu_checkbox.isChecked(),
+            "description": self.comment.toPlainText()
         }
         return self.selections
 

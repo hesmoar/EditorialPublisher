@@ -5,7 +5,6 @@ import opentimelineio as otio
 import re
 import os
 from kitsu_project_context import select_project, get_project
-#from file_utils import renders_to_publish
 from render_utils import renders_to_publish
 
 
@@ -128,20 +127,15 @@ def compare_shots(file_path):
     return shots_to_update
 
 def get_review_status():
-    project_statuses = gazu.task.all_task_statuses()
-    for status in project_statuses:
-        if status.get("short_name") == 'wfa':
-            pending_status = status
+    return next((status for status in gazu.task.all_task_statuses() if status.get("short_name") == 'wfa'), None)
 
-    return pending_status
 
-def files_to_publish():
-#    print("These are the files that we will publish into kitsu")
-#    pprint.pprint(renders_to_publish)
+def files_to_publish(description):
+
     pending_status = get_review_status()
     published_files = renders_to_publish
     kitsu_shots = selected_project_shots
-#    print(f"These are kitsu shots for project {kitsu_shots}")
+
 
     for file in published_files:
         filename = os.path.basename(file)
@@ -150,30 +144,23 @@ def files_to_publish():
 
         if match:
             shot_name_from_file = match.group(3)
-    #print(f"These are some of the matches. {matches}")
+
             shot = next((s for s in kitsu_shots if s.get("name") == shot_name_from_file), None)
 
             if shot:
 
-                print(f"Found the perfect match on render {shot_name_from_file} and kitsu {shot.get("name")}")
+                #print(f"Found the perfect match on render {shot_name_from_file} and kitsu {shot.get("name")}")
                 shot_task = gazu.task.all_tasks_for_shot(shot)
-                #print(shot_task)
+
                 for shottask in shot_task:
-                    if shottask.get("task_type_name") == "Storyboard":
-                        print(f"THIS IS THE FILE PATH: {file}")
-                        pprint.pprint(shottask)
-                        gazu.task.publish_preview(task=shottask,
-                        task_status=pending_status,
-                        comment="Testing publishing a version via code",
+                    if shottask.get("task_type_name") == "Storyboard": # This should ideally be determined by the timeline name
+                        #print(f"THIS IS THE FILE PATH: {file}")
+                        published_preview = gazu.task.publish_preview(task=shottask, 
+                        task_status=pending_status, 
+                        comment=description,
                         preview_file_path=file
                         )
-
-
-#def publish_preview_to_kitsu():
-
-
-
-
+                        pprint.pprint(published_preview)
 
 
 def update_kitsu(file_path):
@@ -188,7 +175,7 @@ def update_kitsu(file_path):
         return
 
     if not shots_to_update:
-        print("No shots to update. Everything is up to date.")
+        print("No shots timecode change detected. Everything is up to date.")
         return
 
     for shot in shots_to_update:

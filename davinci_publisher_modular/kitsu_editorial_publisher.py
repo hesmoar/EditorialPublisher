@@ -162,6 +162,12 @@ def files_to_publish(description):
                         )
                         pprint.pprint(published_preview)
 
+                        data = {
+                            "path": file
+                        }
+
+                        gazu.files.update_preview(published_preview[1], data)
+
 
 def update_kitsu(file_path):
     shots_to_update = compare_shots(file_path)

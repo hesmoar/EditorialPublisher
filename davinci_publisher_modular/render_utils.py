@@ -224,8 +224,6 @@ def render_jobs(project, selected_render_preset, output_folder: str, render_sing
         
     )
     
-
-
     if jobs_to_render:
         print("Rendering current jobs please wait.")
         #print(f"THese are the jobs to render: {jobs_to_render}")

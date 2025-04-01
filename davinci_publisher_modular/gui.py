@@ -10,9 +10,6 @@ from render_utils import get_render_presets
 
 
 
-list = ["Preset_1", "Preset_2", "Preset_3"]
-#list = render_presets
-
 class ResolvePublisherGUI(QMainWindow):
     """GUI for selecting export and render options"""
 
@@ -132,17 +129,11 @@ class ResolvePublisherGUI(QMainWindow):
 
         main_layout.addLayout(button_layout)
 
-                # Store paths and selections
-        #self.export_dir = ""
-        #self.output_dir = ""
-        #self.selections = {}
 
         # Apply stylesheet for a modern look
         self.apply_stylesheet()
 
-    #def closeEvent(self, event):
-    #    print("Operation cancelled by User")
-    #    os._exit(0)
+
     # ------------------------ STYLESHEET ------------------------
     def apply_stylesheet(self):
         """Apply stylesheet for modern look"""

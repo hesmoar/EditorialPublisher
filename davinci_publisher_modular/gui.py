@@ -10,8 +10,38 @@ from render_utils import get_render_presets
 
 
 
+
 class ResolvePublisherGUI(QMainWindow):
     """GUI for selecting export and render options"""
+
+    def on_kitsu_checkbox_changed(self, state):
+        """Triggered when Upload to Kitsu checkbox is toggled."""
+        if state == 2: # If checked
+            try:
+                import gazu
+                from kitsu_auth import connect_to_kitsu
+
+
+                print("Logging into Kitsu and fetching projects...")
+                connect_to_kitsu()
+                projects = gazu.project.all_open_projects()
+
+                self.projects_dropdown.clear()
+                self.project_map = {}
+
+                for project in projects:
+                    name = project["name"]
+                    self.projects_dropdown.addItem(name)
+                    self.project_map[name] = project
+
+                print(f"Loaded {len(projects)} projects from Kitsu.")
+            except Exception as e:
+                print(f"Failed to fetch Kitsu projects: {e}")
+        else:
+
+            self.projects_dropdown.clear()
+            self.projects_dropdown.addItem("Kitsu not enabled")
+
 
     def __init__(self, presets):
         super().__init__()
@@ -79,16 +109,29 @@ class ResolvePublisherGUI(QMainWindow):
 
         # Checkboxes
         checkbox_group = QGroupBox("Export Options")
-        checkbox_layout = QVBoxLayout(checkbox_group)
+        checkbox_layout = QHBoxLayout(checkbox_group)
 
+        checkbox_left_layout = QVBoxLayout()
+        self.checkbox_group = QButtonGroup()
         self.export_otio_checkbox = QCheckBox("Export OTIO")
         self.upload_kitsu_checkbox = QCheckBox("Upload to Kitsu")
+        self.upload_kitsu_checkbox.stateChanged.connect(self.on_kitsu_checkbox_changed)
+        checkbox_left_layout.addWidget(self.export_otio_checkbox)
+        checkbox_left_layout.addWidget(self.upload_kitsu_checkbox)
 
         self.export_otio_checkbox.setChecked(True)
-        self.upload_kitsu_checkbox.setChecked(True)
+        self.upload_kitsu_checkbox.setChecked(False)
 
-        checkbox_layout.addWidget(self.export_otio_checkbox)
-        checkbox_layout.addWidget(self.upload_kitsu_checkbox)
+        checkbox_right_layout = QVBoxLayout()
+        self.projects_dropdown = QComboBox()
+        self.projects_dropdown.addItems(["Project 1", "Project 2", "Project 3"])
+        checkbox_right_layout.addWidget(QLabel("Select Kitsu Project:"))
+        checkbox_right_layout.addWidget(self.projects_dropdown)
+        #self.projects_dropdown.setEnabled(False)  # Disable until Kitsu is implemented
+
+        checkbox_layout.addLayout(checkbox_left_layout)
+        checkbox_layout.addLayout(checkbox_right_layout)
+
 
         # Comment
         comment_group = QGroupBox("Preview Comment")
@@ -220,9 +263,13 @@ class ResolvePublisherGUI(QMainWindow):
             "render_full_cut": self.full_cut_checkbox.isChecked(),
             "selected_render_preset": self.preset_dropdown.currentText(),
             "update_kitsu": self.upload_kitsu_checkbox.isChecked(),
+            "selected_kitsu_project": self.projects_dropdown.currentText() if self.upload_kitsu_checkbox.isChecked() else None,
             "description": self.comment.toPlainText()
         }
         return self.selections
+
+
+
 
     def cancel_and_exit(self):
         """Exit the GUI and terminate the process"""

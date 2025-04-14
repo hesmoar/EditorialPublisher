@@ -27,7 +27,7 @@ from project_utils import get_current_project, delete_existing_jobs
 from file_utils import export_otio
 from render_utils import render_jobs, get_render_presets, get_render_status
 from kitsu_auth import connect_to_kitsu
-from kitsu_editorial_publisher import read_edl, read_otio, update_kitsu, files_to_publish
+from kitsu_editorial_publisher import read_otio, update_kitsu, files_to_publish
 
 
 def main():
@@ -63,6 +63,7 @@ def main():
     render_full_cut = selections.get("render_full_cut")
     selected_render_preset = selections.get("selected_render_preset")
     should_update_kitsu = selections.get("update_kitsu")
+    selected_kitsu_project = selections.get("selected_kitsu_project")
     description = selections.get("description")
 
     print("\nSelected Options:")
@@ -75,6 +76,7 @@ def main():
     print(f"Selected Render preset: {selected_render_preset}")
     print(f"Description: {description}")
     print(f"Update Kitsu: {should_update_kitsu}")
+    print(f"Selected Kitsu Project: {selected_kitsu_project} ")
 
 
     try:
@@ -102,7 +104,7 @@ def main():
             connect_to_kitsu()
             otio_file_path = export_otio(project, export_folder)
             read_otio(otio_file_path)
-            update_kitsu(otio_file_path)
+            update_kitsu(otio_file_path, selected_kitsu_project)
             files_to_publish(description)
 
         print("Process completed successfully!")

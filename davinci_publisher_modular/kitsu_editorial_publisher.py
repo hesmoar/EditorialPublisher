@@ -8,6 +8,7 @@ from kitsu_project_context import select_project, get_project
 from render_utils import renders_to_publish
 
 
+
 regex_pattern = r"(\w+)_(\d{4})-(\d{4})"
 selected_project_shots = []
 
@@ -60,8 +61,11 @@ def read_otio(file_path):
     return otio_shots
 
 
-def get_project_shots():
-    selected_project = select_project()
+def get_project_shots(project_name):
+    
+    #selected_project = select_project()
+    selected_project = project_name
+
     project = gazu.project.get_project_by_name(selected_project)
     shots = gazu.shot.all_shots_for_project(project)
 
@@ -83,8 +87,9 @@ def get_project_shots():
     return kitsu_shots
 
 
-def compare_shots(file_path):
-    kitsu_shots = get_project_shots()
+def compare_shots(file_path, project_name):
+    #kitsu_shots = get_project_shots()
+    kitsu_shots = get_project_shots(project_name) # I added this line for testing
     edl_shots = read_edl(file_path)
     shots_to_update = []
 
@@ -169,8 +174,8 @@ def files_to_publish(description):
                         gazu.files.update_preview(published_preview[1], data)
 
 
-def update_kitsu(file_path):
-    shots_to_update = compare_shots(file_path)
+def update_kitsu(file_path, project_name):
+    shots_to_update = compare_shots(file_path, project_name)
 
     if file_path.endswith('.edl'):
         edl_shots = read_edl(file_path)

@@ -98,6 +98,7 @@ def main():
         )
 
 
+
         # Update on Kitsu if selected
         if should_update_kitsu:
             get_render_status(project)

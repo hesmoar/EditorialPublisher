@@ -5,9 +5,9 @@ import opentimelineio as otio
 import re
 import os
 from kitsu_project_context import select_project, get_project
-from render_utils import renders_to_publish
+from render_utils import renders_to_publish, final_full_cut_path
 
-
+final_cut = final_full_cut_path
 
 regex_pattern = r"(\w+)_(\d{4})-(\d{4})"
 selected_project_shots = []
@@ -32,7 +32,7 @@ def read_edl(file_path):
                                   "timeframe_in": clip_in, 
                                   "timeframe_out": clip_out
                                   })
-                print(f"Match found for clip {clip_name}")
+                #print(f"Match found for clip {clip_name}")
             else:
                 print(f"No match found for clip {clip_name}")
     return edl_shots
@@ -47,7 +47,7 @@ def read_otio(file_path):
             if isinstance(clip, otio.schema.Clip):   # Ensure it's a clip
                 clip_timein = clip.source_range.start_time.to_timecode()
                 clip_timeout = clip.source_range.duration.to_timecode()
-                print(f"Clip: {clip.name}, Start Time: {clip_timein}, Duration: {clip_timeout}")
+                #print(f"Clip: {clip.name}, Start Time: {clip_timein}, Duration: {clip_timeout}")
 
                 match = re.match(regex_pattern, clip.name)
                 if match:

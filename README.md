@@ -1,4 +1,5 @@
 # 🎬 Editorial Publisher
+THIS IS A WORK IN PROGRESS!!!
 
 A modular toolset for exporting and rendering editorial timelines in **DaVinci Resolve**, and updating metadata in Kitsu. This project allows you to streamline the editorial process by exporting EDLs, OTIO files, and rendering shot-based clips and full cuts automatically.
 
@@ -6,11 +7,12 @@ A modular toolset for exporting and rendering editorial timelines in **DaVinci R
 
 ## 🚀 **Features**
 
-✅ Export EDL and OTIO files from DaVinci Resolve timelines.\
-✅ Render individual shots and/or full cuts.\
+✅ Export OTIO files from DaVinci Resolve timelines.\
+✅ Render individual shots, section and/or full cuts.\
+✅ Functionality to publish (or not) elements into Kitsu server.\
 ✅ Modular and extensible design for easy customization.\
-✅ Folder selection via GUI for flexible output locations.\
-✅ Error handling and logging for smooth execution.
+✅ Easy to read GUI for user input.\
+
 
 ---
 
@@ -19,10 +21,12 @@ A modular toolset for exporting and rendering editorial timelines in **DaVinci R
 1. Python 3.7 - 3.10
 2. DaVinci Resolve
 3. OTIO
+4. Kitsu Server
 
 
 ## ⚙️ **Installation**
-
+This setup is assuming you have a kitsu server already set up or not planning to use Kitsu functionality 
+Kitsu setup guide: https://zou.cg-wire.com/#
 
 1. **Clone the Repository**
 
@@ -69,6 +73,9 @@ pip install -r requirements.txt
 1. **Prepare DaVinci Resolve**
    - Open DaVinci Resolve.
    - Load your project.
+   - In the edit page lets set 2 timeline markers (these will determine the start and end frame of your full cut):
+      - Blue marker: on the start of your cut
+      - Red marker: on the end of your cut 
    - In the Deliver page set your mark in and mark out
 
 
@@ -77,33 +84,59 @@ pip install -r requirements.txt
    - Select Console, this will bring up the console, make sure to select Py3
    - Go to the Workspace menu again
    - Select Scripts
-   - Depending on where you saved the script it will appear on the menu, 
+   - Depending on where you saved the script it will appear on the menu 
    - Click on the script and it will begin to run
 
 3. **Select Output Folders**
 
 - A GUI will appear, prompting you to:
-  - Select the **Render Output Folder**. (This is where you want to save your renders)
-  - Select the **EDL/OTIO Export Folder**. (This is where you want to save your EDL file)
+   - Directory Selection:
+      - Select the **Render Output Folder**. (This is where you want to save your renders)
+      - Select the **EDL/OTIO Export Folder**. (This is where you want to save your EDL file)
+   - Render Options:
+      - Select the renders you need from the checkboxes
+         - Single shots
+         - Section Render cut
+         - Full Cut 
+      - Select the render preset (Based on the render presets in davinci)
+   - Export Options:
+      - Export OTIO: Check if you want to export an OTIO file of your current timeline (This is the file that will be used to update cut items in Kitsu metadata)
+      - Upload to Kitsu: Check if you want to upload renders and update metadata in Kitsu server
+         - Select Kitsu Project: Available projects in your kitsu server
+         - Select Kitsu Edit: Available edits inside the selected project (This is were the full cut will be published to)
+         - Select Kitsu Edit Task: Available tasks for the selected edit (This is were the full cut will be published to)
+   - Preview Comment:
+      - Description field: This is a text field which the contents will be used as the comment published for the preview in Kitsu, this applies for single shots and full cut. 
 
    - **Automated Processing**
    - The script will:
-     - Export the EDL file to the selected folder
+     - Export the OTIO file to the selected folder
      - Delete existing render jobs in the DaVinci project.
-     - Apply rendering settings by using the first preset. (you can change this in the "render_utils.py" file)
-     - Render individual shots and the full cut.
+     - Apply rendering settings by using the selected values and preset in the GUI.
+     - Ensure files have a unique name including the version suffix (v001)
+     - Render the new render jobs
+     - Compare the metadata from the OTIO file with the information in Kitsu and update if necessary
+     - Publish previews of the single shots into their matching shot in Kitsu using the description as a comment
+     - Publish previews of the full cut into the select edit task. 
 
-4. **Obtaining data from Kitsu**
-   - A GUI will appear, prompting you to:
-      - Select an active project from your Kitsu site
+## 🗺️ Roadmap
+1. [ ] Add file management functionality
+   * Creation of folders and move files
+   * Follow a specific File tree structure
 
-      - **Automated Processing**
-      - The script will:
-         - Look into the Kitsu database for the project you selected.
-         - Retrieve shots and compare the names of the shots with the ones in your edl file
-         - Find matching names and find differences in the timeframe_in and timeframe_out custom field
-         - Where differences are found it will update the metadata based on the recently exported edl.
----
+2. [ ] Add support for multiple tracks (Currently only tested with 1 track)
+
+3. [ ] Add support for effects and transitions. 
+
+4. [ ] Implement other editorial software
+   * [ ] OpenShot
+   * [ ] Kdenlive
+   * [ ] Adobe Premiere
+   * [ ] Avid
+
+5. [ ] Implement other project tracking softwares
+   * [ ] Shotgrid/Shotgun/Flow
+   * [ ] FTrack
 
 ## 🛠️ **Contributing**
 
@@ -144,43 +177,9 @@ This project is licensed under the MIT License – see the [LICENSE](LICENSE) fi
 
 ## 👥 **Author**
 
-**Hector S.**\
+**Hector E.**\
 [GitHub](https://github.com/hesmoar)\
 [LinkedIn](https://www.linkedin.com/in/hesmoar)
 
 
 
-## Roadmap
-1. [x] Single shot render files should follow the naming convention stablished for the project version entity.
-   * [x] Done in standalone version
-   * [x] Add to modular version
-
-2. [x] Connect process of edl export and rendering
-   * Done in the standalone version
-
-3. [x] Add button or script to resolve to start the process from inside
-
-4. [ ] Load versions from Kitsu into Resolve timeline
-   * [ ] Latest versions for each shot
-   * [ ] Based on a Playlist
-   * [ ] Ask user for specifc tasks
-   * [ ] Flag user if any shot has changed from the latest editorial cut 
-
-5. [ ] File management. 
-   * [ ] Check for existing files and names based on a specific directory structure
-   * [ ] Creation of folders and files 
-   * [ ] Syncronization setup using syncthing or other file management systems 
-   * File Management could maybe work with Prism. 
-   * [ ] File management should also be as modular as possible so it can be software agnostic. 
-
-6. [ ] Add support to transitions, effects and other elements done in multiple tracks by editorial.
-
-7. [ ] Add support to run process in a render farm to avoid using the user computer
-
-8. [ ] Implement other editorial software
-   * [ ] OpenShot
-   * [ ] Kdenlive
-   * [ ] Adobe Premiere
-   * [ ] Avid
-
-9. [ ] Investigate what would be the input for editorial from storyboard or animatic. Exports from storyboarder or toon boom storyboard. 

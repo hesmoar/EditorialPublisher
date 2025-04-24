@@ -71,3 +71,5 @@ def export_otio(project, export_directory):
     except Exception as e:
         print(f"Error exporting timeline: {e}")
     return otioFilePath
+
+# In here we have to add file management functionality, so that it moves the files to the correct folder. 

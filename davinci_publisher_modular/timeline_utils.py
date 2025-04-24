@@ -2,6 +2,7 @@
 import os
 import pprint
 from project_utils import get_current_project
+import pprint
 
 resolve_timeline_name = None
 

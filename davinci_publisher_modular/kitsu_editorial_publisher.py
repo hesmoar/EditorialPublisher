@@ -5,8 +5,10 @@ import opentimelineio as otio
 import re
 import os
 from kitsu_project_context import select_project, get_project
-from render_utils import renders_to_publish
+from render_utils import renders_to_publish #final_full_cut_path
+#from timeline_utils import resolve_timeline_name
 
+#final_cut = final_full_cut_path
 
 regex_pattern = r"(\w+)_(\d{4})-(\d{4})"
 selected_project_shots = []
@@ -31,7 +33,7 @@ def read_edl(file_path):
                                   "timeframe_in": clip_in, 
                                   "timeframe_out": clip_out
                                   })
-                print(f"Match found for clip {clip_name}")
+                #print(f"Match found for clip {clip_name}")
             else:
                 print(f"No match found for clip {clip_name}")
     return edl_shots
@@ -46,7 +48,7 @@ def read_otio(file_path):
             if isinstance(clip, otio.schema.Clip):   # Ensure it's a clip
                 clip_timein = clip.source_range.start_time.to_timecode()
                 clip_timeout = clip.source_range.duration.to_timecode()
-                print(f"Clip: {clip.name}, Start Time: {clip_timein}, Duration: {clip_timeout}")
+                #print(f"Clip: {clip.name}, Start Time: {clip_timein}, Duration: {clip_timeout}")
 
                 match = re.match(regex_pattern, clip.name)
                 if match:
@@ -60,8 +62,11 @@ def read_otio(file_path):
     return otio_shots
 
 
-def get_project_shots():
-    selected_project = select_project()
+def get_project_shots(project_name):
+    
+    #selected_project = select_project()
+    selected_project = project_name
+
     project = gazu.project.get_project_by_name(selected_project)
     shots = gazu.shot.all_shots_for_project(project)
 
@@ -83,8 +88,9 @@ def get_project_shots():
     return kitsu_shots
 
 
-def compare_shots(file_path):
-    kitsu_shots = get_project_shots()
+def compare_shots(file_path, project_name):
+    #kitsu_shots = get_project_shots()
+    kitsu_shots = get_project_shots(project_name) # I added this line for testing
     edl_shots = read_edl(file_path)
     shots_to_update = []
 
@@ -140,7 +146,7 @@ def files_to_publish(description):
     for file in published_files:
         filename = os.path.basename(file)
         match = re.search(regex_pattern, filename)
-        print(f"These are the filenames {filename}")
+        print(f"Uploading preview: {filename}")
 
         if match:
             shot_name_from_file = match.group(3)
@@ -160,11 +166,18 @@ def files_to_publish(description):
                         comment=description,
                         preview_file_path=file
                         )
-                        pprint.pprint(published_preview)
+                        #pprint.pprint(published_preview)
+
+                        data = {
+                            "path": file
+                        }
+
+                        gazu.files.update_preview(published_preview[1], data)
+                        print(f"Preview file {file} published successfully for shot {shot_name_from_file}")
 
 
-def update_kitsu(file_path):
-    shots_to_update = compare_shots(file_path)
+def update_kitsu(file_path, project_name):
+    shots_to_update = compare_shots(file_path, project_name)
 
     if file_path.endswith('.edl'):
         edl_shots = read_edl(file_path)
@@ -199,7 +212,20 @@ def update_kitsu(file_path):
             print(f"Shot {shot_name} updated successfully")
         except Exception as e:
             print(f"Failed to update shot {shot_name} in Kitsu: {e}")
+ 
+def publish_edit_preview(selected_edit_task, description, final_cut):
+    edit_task = selected_edit_task
+    pending_status = get_review_status()
 
+    print(f"Selected edit task: {edit_task}")
+    print(f"This is the description: {description}")
+    print(f"This is the final cut path: {final_cut}")
+    
+    published_preview = gazu.task.publish_preview(task=edit_task, # Find a way of getting the task based on the name maybe with a json mapping 
+                        task_status=pending_status, 
+                        comment=description, # Use the same as the user puts in the UI
+                        preview_file_path=final_cut # Lets find a way to use the file that results from the render of the full_cut
+                        )
 
 
 

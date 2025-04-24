@@ -4,6 +4,8 @@ import pprint
 from project_utils import get_current_project
 import pprint
 
+resolve_timeline_name = None
+
 def get_timeline(project):
     """Get the current timeline of the project."""
     timeline = project.GetCurrentTimeline()
@@ -16,6 +18,7 @@ def get_timeline_name(project):
     """Get the timeline name prefixed by the project name."""
     timeline = get_timeline(project)
     if timeline:
+        resolve_timeline_name = timeline.GetName()
         return f"{project.GetName()}_{timeline.GetName()}"
     return None
 

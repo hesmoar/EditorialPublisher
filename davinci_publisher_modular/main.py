@@ -25,9 +25,9 @@ add_scripts_to_path(pipe_scripts)
 from gui import run_gui
 from project_utils import get_current_project, delete_existing_jobs
 from file_utils import export_otio
-from render_utils import render_jobs, get_render_presets, get_render_status
+from render_utils import render_jobs, get_render_presets, get_render_status, final_full_cut_path
 from kitsu_auth import connect_to_kitsu
-from kitsu_editorial_publisher import read_edl, read_otio, update_kitsu, files_to_publish
+from kitsu_editorial_publisher import read_otio, update_kitsu, files_to_publish, publish_edit_preview
 
 
 def main():
@@ -63,6 +63,9 @@ def main():
     render_full_cut = selections.get("render_full_cut")
     selected_render_preset = selections.get("selected_render_preset")
     should_update_kitsu = selections.get("update_kitsu")
+    selected_kitsu_project = selections.get("selected_kitsu_project")
+    selected_kitsu_edit = selections.get("selected_kitsu_edit")
+    selected_edit_task = selections.get("selected_edit_task")
     description = selections.get("description")
 
     print("\nSelected Options:")
@@ -75,6 +78,9 @@ def main():
     print(f"Selected Render preset: {selected_render_preset}")
     print(f"Description: {description}")
     print(f"Update Kitsu: {should_update_kitsu}")
+    print(f"Selected Kitsu Project: {selected_kitsu_project} ")
+    print(f"Selected Kitsu Edit: {selected_kitsu_edit} ")
+    print(f"Selected Kitsu Edit Task: {selected_edit_task} ")
 
 
     try:
@@ -86,7 +92,7 @@ def main():
             export_otio(project, export_folder)
             
         # Render single shots, full cut, or both
-        render_jobs(
+        jobs_to_render, final_full_cut_path = render_jobs(
             project,
             selected_render_preset,
             output_folder,
@@ -95,15 +101,22 @@ def main():
             render_full_cut=selections.get("render_full_cut", True)
         )
 
+        #print(f"Final full cut path: {final_full_cut_path}")
+
+
 
         # Update on Kitsu if selected
         if should_update_kitsu:
             get_render_status(project)
             connect_to_kitsu()
             otio_file_path = export_otio(project, export_folder)
+            print("Read Otio file now! ")
             read_otio(otio_file_path)
-            update_kitsu(otio_file_path)
+            print("Read otio file done! now Update Kitsu")
+            update_kitsu(otio_file_path, selected_kitsu_project)
+            print("update kitsu done now files to publish")
             files_to_publish(description)
+            publish_edit_preview(selected_edit_task, description, final_full_cut_path)
 
         print("Process completed successfully!")
 

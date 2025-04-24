@@ -11,6 +11,7 @@ section_cut_ranges = {}
 shot_cut_ranges = {}
 
 renders_to_publish = []
+final_full_cut_path = None
 
 
 
@@ -164,6 +165,7 @@ def section_render_settings(project, output_folder, selected_render_preset):
 def get_unique_renderJob_name(project, selected_render_preset, output_folder, render_single_shots=True, render_full_cut=True, render_section_cut=True):
     """Ensure render job filenames are unique by checking existing ones and updating if necessary."""
     updated_jobs = []
+
     if render_single_shots:
         single_shots_render_settings(project, output_folder, selected_render_preset)
     
@@ -177,6 +179,8 @@ def get_unique_renderJob_name(project, selected_render_preset, output_folder, re
         job_filename = job.get("OutputFilename", "Unknown")
         job_folder = job.get("TargetDir", "Unknown")
         job_id = job.get("JobId", "Unknown")
+
+        is_full_cut = job_id in full_cut_ranges
 
         if job_id in shot_cut_ranges:
             job_markIn = shot_cut_ranges[job_id]["MarkIn"]
@@ -204,17 +208,20 @@ def get_unique_renderJob_name(project, selected_render_preset, output_folder, re
                 "MarkOut": job_markOut
             })
             updated_jobs.append(project.AddRenderJob())
+            if is_full_cut:
+                final_full_cut_path = os.path.join(job_folder, new_filename)
+                print(f"THIS IS THE ONE: Final full cut path: {final_full_cut_path}")
         else:
             updated_jobs.append(job_id)
             print(f"Adding job: {job_id}")
-    return updated_jobs
+    return updated_jobs, final_full_cut_path
 
 
 def render_jobs(project, selected_render_preset, output_folder: str, render_single_shots=True, render_full_cut=True, render_section_cut=True) -> None:
     """Render all jobs after ensuring unique filenames."""
 
     get_timeline_marks(project)
-    jobs_to_render = get_unique_renderJob_name(
+    jobs_to_render, final_full_cut_path = get_unique_renderJob_name(
         project,
         selected_render_preset,
         output_folder,
@@ -224,8 +231,6 @@ def render_jobs(project, selected_render_preset, output_folder: str, render_sing
         
     )
     
-
-
     if jobs_to_render:
         print("Rendering current jobs please wait.")
         #print(f"THese are the jobs to render: {jobs_to_render}")
@@ -240,7 +245,7 @@ def render_jobs(project, selected_render_preset, output_folder: str, render_sing
 
         #pprint.pprint(renders_to_publish)
         project.StartRendering(jobs_to_render)
-    return jobs_to_render
+    return jobs_to_render, final_full_cut_path
 
 def get_render_status(project, delay=5):
 
@@ -249,13 +254,14 @@ def get_render_status(project, delay=5):
     while project.IsRenderingInProgress():
         print("Rendering is in progress")
 
-        for render in renders_in_queue:
-            job_status = project.GetRenderJobStatus(render)
-            print(f"Job {render.get("RenderJobName")} status {job_status}")
+        #for render in renders_in_queue:
+        #    job_status = project.GetRenderJobStatus(render)
+        #    print(f"Job {render.get("RenderJobName")} status {job_status}")
 
         time.sleep(delay)
     
     print("Rendering Complete")
+
     
 
 

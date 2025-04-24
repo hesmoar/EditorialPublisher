@@ -59,8 +59,10 @@ def get_edit_info(selected_project_name):
     if project_edits:
         print(f"edits loaded succesfully")
         for edit in project_edits:
-            edit_url = gazu.edit.get_edit_url(edit)
-            print(edit_url) 
+            #edit_url = gazu.edit.get_edit_url(edit)
+            edit_name = edit.get("name")
+            print(edit_name)
+            return edit_name
 
         #pprint.pprint(project_edits))
     else:

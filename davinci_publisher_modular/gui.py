@@ -1,5 +1,6 @@
 import sys
 import os
+import pprint
 import tkinter as tk
 from PySide6.QtWidgets import (
     QApplication, QMainWindow, QWidget, QVBoxLayout, QLabel, QPushButton,
@@ -10,11 +11,38 @@ from render_utils import get_render_presets
 
 
 
-list = ["Preset_1", "Preset_2", "Preset_3"]
-#list = render_presets
 
 class ResolvePublisherGUI(QMainWindow):
     """GUI for selecting export and render options"""
+
+    def on_kitsu_checkbox_changed(self, state):
+        """Triggered when Upload to Kitsu checkbox is toggled."""
+        if state == 2: # If checked
+            try:
+                import gazu
+                from kitsu_auth import connect_to_kitsu
+
+
+                print("Logging into Kitsu and fetching projects...")
+                connect_to_kitsu()
+                projects = gazu.project.all_open_projects()
+
+                self.projects_dropdown.clear()
+                self.project_map = {}
+
+                for project in projects:
+                    name = project["name"]
+                    self.projects_dropdown.addItem(name)
+                    self.project_map[name] = project
+
+                print(f"Loaded {len(projects)} projects from Kitsu.")
+            except Exception as e:
+                print(f"Failed to fetch Kitsu projects: {e}")
+        else:
+
+            self.projects_dropdown.clear()
+            self.projects_dropdown.addItem("Kitsu not enabled")
+
 
     def __init__(self, presets):
         super().__init__()
@@ -82,16 +110,41 @@ class ResolvePublisherGUI(QMainWindow):
 
         # Checkboxes
         checkbox_group = QGroupBox("Export Options")
-        checkbox_layout = QVBoxLayout(checkbox_group)
+        checkbox_layout = QHBoxLayout(checkbox_group)
 
+        checkbox_left_layout = QVBoxLayout()
+        self.checkbox_group = QButtonGroup()
         self.export_otio_checkbox = QCheckBox("Export OTIO")
         self.upload_kitsu_checkbox = QCheckBox("Upload to Kitsu")
+        self.upload_kitsu_checkbox.stateChanged.connect(self.on_kitsu_checkbox_changed)
+        checkbox_left_layout.addWidget(self.export_otio_checkbox)
+        checkbox_left_layout.addWidget(self.upload_kitsu_checkbox)
 
         self.export_otio_checkbox.setChecked(True)
-        self.upload_kitsu_checkbox.setChecked(True)
+        self.upload_kitsu_checkbox.setChecked(False)
 
-        checkbox_layout.addWidget(self.export_otio_checkbox)
-        checkbox_layout.addWidget(self.upload_kitsu_checkbox)
+        checkbox_right_layout = QVBoxLayout()
+        self.projects_dropdown = QComboBox()
+        self.projects_dropdown.addItems(["Select Kitsu Project"])
+        self.projects_dropdown.currentIndexChanged.connect(self.on_project_selected)
+        checkbox_right_layout.addWidget(QLabel("Select Kitsu Project:"))
+        checkbox_right_layout.addWidget(self.projects_dropdown)
+        
+        self.edits_dropdown = QComboBox()
+        self.edits_dropdown.addItems(["Select Kitsu Edit"])
+        self.edits_dropdown.currentIndexChanged.connect(self.on_edit_selected)
+        checkbox_right_layout.addWidget(QLabel("Select Kitsu Edit:"))
+        checkbox_right_layout.addWidget(self.edits_dropdown)
+
+        self.edit_tasks_dropdown = QComboBox()
+        self.edit_tasks_dropdown.addItems(["Select Kitsu Edit Task"])
+        checkbox_right_layout.addWidget(QLabel("Select Kitsu Edit Task:"))
+        checkbox_right_layout.addWidget(self.edit_tasks_dropdown)
+
+
+        checkbox_layout.addLayout(checkbox_left_layout)
+        checkbox_layout.addLayout(checkbox_right_layout)
+
 
         # Comment
         comment_group = QGroupBox("Preview Comment")
@@ -132,17 +185,11 @@ class ResolvePublisherGUI(QMainWindow):
 
         main_layout.addLayout(button_layout)
 
-                # Store paths and selections
-        #self.export_dir = ""
-        #self.output_dir = ""
-        #self.selections = {}
 
         # Apply stylesheet for a modern look
         self.apply_stylesheet()
 
-    #def closeEvent(self, event):
-    #    print("Operation cancelled by User")
-    #    os._exit(0)
+
     # ------------------------ STYLESHEET ------------------------
     def apply_stylesheet(self):
         """Apply stylesheet for modern look"""
@@ -217,6 +264,56 @@ class ResolvePublisherGUI(QMainWindow):
             self.output_dir = dir_name
             self.output_dir_label.setText(f"Render Output Directory: {dir_name}")
 
+    def kitsu_edits(self):
+        """Get the edits for the selected project."""
+        try:
+            import gazu
+
+            project = self.project_map[self.projects_dropdown.currentText()]
+            edits = gazu.edit.all_edits_for_project(project)
+            
+            if edits:
+                self.edits_dropdown.clear()
+                for edit in edits:
+                    name = edit["name"]
+                    id = edit["id"]
+                    self.edits_dropdown.addItem(name)
+
+                print(f"Loaded {len(edits)} edits from Kitsu.")
+            else:
+                print("No edits found for the selected project.")
+                self.edits_dropdown.clear()
+                self.edits_dropdown.addItem("No Edits Found")
+        except Exception as e:
+            print(f"Failed to fetch Kitsu edits: {e}")
+    
+
+    def kitsu_edit_tasks(self):
+        """Get the tasks for the selected edit."""
+        try:
+            import gazu
+            
+            project = self.project_map[self.projects_dropdown.currentText()]
+            edit = str(self.edits_dropdown.currentText())
+            edit_entity = gazu.edit.get_edit_by_name(project, edit)
+            edit_id = edit_entity["id"]
+
+            tasks = gazu.task.all_tasks_for_edit(edit_id)
+            if tasks:
+                self.edit_tasks_dropdown.clear()
+                for task in tasks:
+                    name = task["task_type_name"]
+                    task_id = task["id"]
+                    self.edit_tasks_dropdown.addItem(name, task_id)
+
+                print(f"Loaded {len(tasks)} tasks from Kitsu.")
+            else:
+                print("No tasks found for the selected edit.")
+                self.edit_tasks_dropdown.clear()
+                self.edit_tasks_dropdown.addItem("No Tasks Found")
+        except Exception as e:
+            print(f"Failed to fetch Kitsu tasks: {e}")
+
     def get_selections(self):
         """Get the user's selections as a dictionary."""
 
@@ -229,9 +326,50 @@ class ResolvePublisherGUI(QMainWindow):
             "render_full_cut": self.full_cut_checkbox.isChecked(),
             "selected_render_preset": self.preset_dropdown.currentText(),
             "update_kitsu": self.upload_kitsu_checkbox.isChecked(),
+            "selected_kitsu_project": self.projects_dropdown.currentText() if self.upload_kitsu_checkbox.isChecked() else None,
+            "selected_kitsu_edit": self.edits_dropdown.currentText() if self.upload_kitsu_checkbox.isChecked() else None,
+            #"selected_edit_task": self.edit_tasks_dropdown.currentText() if self.upload_kitsu_checkbox.isChecked() else None,  # Placeholder for task selection
+            "selected_edit_task": self.get_selected_task_id() if self.upload_kitsu_checkbox.isChecked() else None,
             "description": self.comment.toPlainText()
         }
         return self.selections
+
+    def on_project_selected(self, index):
+        """Triggered when a project is selected from the dropdown."""
+        if index > 0:  # Ignore the default "Select Kitsu Project" option
+            selected_project_name = self.projects_dropdown.currentText()
+            print(f"Selected project: {selected_project_name}")
+
+            # Perform actions based on the selected project
+            self.kitsu_edits()  # Example: Load edits for the selected project
+        else:
+            print("No project selected.")
+            self.edits_dropdown.clear()
+            self.edits_dropdown.addItem("Select Kitsu Edit")
+
+    def on_edit_selected(self, index):
+        """Triggered when an edit is selected from the dropdown."""
+        if index > 0:  # Ignore the default "Select Kitsu Edit" option
+            selected_edit_name = self.edits_dropdown.currentText()
+            print(f"Selected edit: {selected_edit_name}")
+
+            # Perform actions based on the selected edit
+            self.kitsu_edit_tasks()
+        else:
+            print("No edit selected.")
+            self.edit_tasks_dropdown.clear()
+            self.edit_tasks_dropdown.addItem("Select Kitsu Edit Task")
+
+    def get_selected_task_id(self):
+        """Retrieve the ID of the selected task."""
+        index = self.edit_tasks_dropdown.currentIndex()
+        if index > 0:  # Ignore the default "Select Kitsu Edit Task" option
+            task_id = self.edit_tasks_dropdown.itemData(index)  # Retrieve the stored task ID
+            print(f"Selected task ID: {task_id}")
+            return task_id
+        else:
+            print("No task selected.")
+            return None       
 
     def cancel_and_exit(self):
         """Exit the GUI and terminate the process"""
@@ -247,6 +385,9 @@ class ResolvePublisherGUI(QMainWindow):
             return
 
         self.get_selections()
+
+        selected_task_id = self.get_selected_task_id()
+
         self.close()
 
 

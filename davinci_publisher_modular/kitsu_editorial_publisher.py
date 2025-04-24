@@ -5,9 +5,10 @@ import opentimelineio as otio
 import re
 import os
 from kitsu_project_context import select_project, get_project
-from render_utils import renders_to_publish, final_full_cut_path
+from render_utils import renders_to_publish #final_full_cut_path
+#from timeline_utils import resolve_timeline_name
 
-final_cut = final_full_cut_path
+#final_cut = final_full_cut_path
 
 regex_pattern = r"(\w+)_(\d{4})-(\d{4})"
 selected_project_shots = []
@@ -145,7 +146,7 @@ def files_to_publish(description):
     for file in published_files:
         filename = os.path.basename(file)
         match = re.search(regex_pattern, filename)
-        print(f"These are the filenames {filename}")
+        print(f"Uploading preview: {filename}")
 
         if match:
             shot_name_from_file = match.group(3)
@@ -165,13 +166,14 @@ def files_to_publish(description):
                         comment=description,
                         preview_file_path=file
                         )
-                        pprint.pprint(published_preview)
+                        #pprint.pprint(published_preview)
 
                         data = {
                             "path": file
                         }
 
                         gazu.files.update_preview(published_preview[1], data)
+                        print(f"Preview file {file} published successfully for shot {shot_name_from_file}")
 
 
 def update_kitsu(file_path, project_name):
@@ -210,7 +212,20 @@ def update_kitsu(file_path, project_name):
             print(f"Shot {shot_name} updated successfully")
         except Exception as e:
             print(f"Failed to update shot {shot_name} in Kitsu: {e}")
+ 
+def publish_edit_preview(selected_edit_task, description, final_cut):
+    edit_task = selected_edit_task
+    pending_status = get_review_status()
 
+    print(f"Selected edit task: {edit_task}")
+    print(f"This is the description: {description}")
+    print(f"This is the final cut path: {final_cut}")
+    
+    published_preview = gazu.task.publish_preview(task=edit_task, # Find a way of getting the task based on the name maybe with a json mapping 
+                        task_status=pending_status, 
+                        comment=description, # Use the same as the user puts in the UI
+                        preview_file_path=final_cut # Lets find a way to use the file that results from the render of the full_cut
+                        )
 
 
 

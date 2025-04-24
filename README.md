@@ -151,14 +151,14 @@ This project is licensed under the MIT License – see the [LICENSE](LICENSE) fi
 
 
 ## Roadmap
-1. [ ] Single shot render files should follow the naming convention stablished for the project version entity.
+1. [x] Single shot render files should follow the naming convention stablished for the project version entity.
    * [x] Done in standalone version
    * [x] Add to modular version
 
 2. [x] Connect process of edl export and rendering
    * Done in the standalone version
 
-3. [ ] Add button or script to resolve to start the process from inside
+3. [x] Add button or script to resolve to start the process from inside
 
 4. [ ] Load versions from Kitsu into Resolve timeline
    * [ ] Latest versions for each shot

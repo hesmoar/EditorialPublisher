@@ -11,6 +11,7 @@ section_cut_ranges = {}
 shot_cut_ranges = {}
 
 renders_to_publish = []
+final_full_cut_path = None
 
 
 
@@ -164,7 +165,6 @@ def section_render_settings(project, output_folder, selected_render_preset):
 def get_unique_renderJob_name(project, selected_render_preset, output_folder, render_single_shots=True, render_full_cut=True, render_section_cut=True):
     """Ensure render job filenames are unique by checking existing ones and updating if necessary."""
     updated_jobs = []
-    final_full_cut_path = None
 
     if render_single_shots:
         single_shots_render_settings(project, output_folder, selected_render_preset)
@@ -221,7 +221,7 @@ def render_jobs(project, selected_render_preset, output_folder: str, render_sing
     """Render all jobs after ensuring unique filenames."""
 
     get_timeline_marks(project)
-    jobs_to_render, full_cut_path = get_unique_renderJob_name(
+    jobs_to_render, final_full_cut_path = get_unique_renderJob_name(
         project,
         selected_render_preset,
         output_folder,
@@ -245,7 +245,7 @@ def render_jobs(project, selected_render_preset, output_folder: str, render_sing
 
         #pprint.pprint(renders_to_publish)
         project.StartRendering(jobs_to_render)
-    return jobs_to_render
+    return jobs_to_render, final_full_cut_path
 
 def get_render_status(project, delay=5):
 

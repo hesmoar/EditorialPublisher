@@ -28,6 +28,7 @@ class ResolvePublisherGUI(QMainWindow):
                 projects = gazu.project.all_open_projects()
 
                 self.projects_dropdown.clear()
+                self.projects_dropdown.addItem("Select Kitsu Project")
                 self.project_map = {}
 
                 for project in projects:
@@ -271,9 +272,12 @@ class ResolvePublisherGUI(QMainWindow):
 
             project = self.project_map[self.projects_dropdown.currentText()]
             edits = gazu.edit.all_edits_for_project(project)
+
+            
             
             if edits:
                 self.edits_dropdown.clear()
+                self.edits_dropdown.addItem("Select Kitsu Edit")
                 for edit in edits:
                     name = edit["name"]
                     id = edit["id"]
@@ -299,8 +303,10 @@ class ResolvePublisherGUI(QMainWindow):
             edit_id = edit_entity["id"]
 
             tasks = gazu.task.all_tasks_for_edit(edit_id)
+
             if tasks:
                 self.edit_tasks_dropdown.clear()
+                self.edit_tasks_dropdown.addItem("Select Kitsu Edit Task")
                 for task in tasks:
                     name = task["task_type_name"]
                     task_id = task["id"]

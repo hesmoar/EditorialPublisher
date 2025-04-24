@@ -86,9 +86,9 @@ class ResolvePublisherGUI(QMainWindow):
         # Left Column
         left_layout = QVBoxLayout()
         self.render_group = QButtonGroup()
-        self.single_shot_checkbox = QCheckBox("Single Shots Only")
-        self.section_cut_checkbox = QCheckBox("Section Render cut only")
-        self.full_cut_checkbox = QCheckBox("Full Cut Only")
+        self.single_shot_checkbox = QCheckBox("Single Shots")
+        self.section_cut_checkbox = QCheckBox("Section Render cut")
+        self.full_cut_checkbox = QCheckBox("Full Cut")
         left_layout.addWidget(self.single_shot_checkbox)
         left_layout.addWidget(self.section_cut_checkbox)
         left_layout.addWidget(self.full_cut_checkbox)

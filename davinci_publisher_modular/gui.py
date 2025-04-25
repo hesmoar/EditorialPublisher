@@ -35,23 +35,24 @@ class ResolvePublisherGUI(QMainWindow):
                     name = project["name"]
                     self.projects_dropdown.addItem(name)
                     self.project_map[name] = project
-
+                
                 print(f"Loaded {len(projects)} projects from Kitsu.")
+
+                self.kitsu_dropdown_group.setVisible(True)
             except Exception as e:
                 print(f"Failed to fetch Kitsu projects: {e}")
+                self.kitsu_dropdown_group.setVisible(False)
         else:
 
             self.projects_dropdown.clear()
             self.projects_dropdown.addItem("Kitsu not enabled")
+            self.kitsu_dropdown_group.setVisible(False)
 
 
     def __init__(self, presets):
         super().__init__()
         self.setWindowTitle("Editorial Publisher Settings")
         self.setGeometry(300, 200, 650, 450)
-
-        # Add Icon to the window 
-        #self.setWindowIcon(QIcon())
 
         # Central widget and layout
         central_widget = QWidget()
@@ -61,8 +62,125 @@ class ResolvePublisherGUI(QMainWindow):
         main_layout.setContentsMargins(20, 20, 20, 20)
         main_layout.setSpacing(15)
 
-        # Directory Selection
+        # Create a horizontal layout for two columns
+        first_level_columns_layout = QHBoxLayout()
 
+        # Left Column (Render and Export Options)
+        left_column_layout = QVBoxLayout()
+
+        # Render and Export Options
+        render_group = QGroupBox("Render and Export Options")
+        render_layout = QVBoxLayout(render_group)
+
+        self.single_shot_checkbox = QCheckBox("Single Shots")
+        self.section_cut_checkbox = QCheckBox("Section Render cut")
+        self.full_cut_checkbox = QCheckBox("Full Cut")
+        self.single_shot_checkbox.setChecked(True)  # Default selections
+        self.full_cut_checkbox.setChecked(True)
+
+        render_layout.addWidget(self.single_shot_checkbox)
+        render_layout.addWidget(self.section_cut_checkbox)
+        render_layout.addWidget(self.full_cut_checkbox)
+
+        left_column_layout.addWidget(render_group)
+
+        # Right Column (Checkbox or Export Options)
+        right_column_layout = QVBoxLayout()
+
+        # Export Options
+        checkbox_group = QGroupBox("Export Options")
+        checkbox_layout = QVBoxLayout(checkbox_group)
+
+        self.export_otio_checkbox = QCheckBox("Export OTIO")
+        self.upload_kitsu_checkbox = QCheckBox("Upload to Kitsu")
+        self.upload_kitsu_checkbox.stateChanged.connect(self.on_kitsu_checkbox_changed)
+
+        self.export_otio_checkbox.setChecked(True)
+        self.upload_kitsu_checkbox.setChecked(False)
+
+        checkbox_layout.addWidget(self.export_otio_checkbox)
+        checkbox_layout.addWidget(self.upload_kitsu_checkbox)
+
+        right_column_layout.addWidget(checkbox_group)
+
+        # Add the two columns to the horizontal layout
+        first_level_columns_layout.addLayout(left_column_layout)
+        first_level_columns_layout.addLayout(right_column_layout)
+
+        # Add the columns layout to the main layout
+        main_layout.addLayout(first_level_columns_layout)
+
+        # Second level columns layout
+        second_level_columns_layout = QHBoxLayout()
+
+        # Second level Left Column --
+        second_left_column_layout = QVBoxLayout()
+
+        # Kitsu Dropdown Section ---------------------------------------------------
+        self.kitsu_dropdown_group = QGroupBox("Kitsu Settings selection")
+        kitsu_dropdown_layout = QVBoxLayout(self.kitsu_dropdown_group)
+
+
+        self.projects_dropdown = QComboBox()
+        self.projects_dropdown.addItems(["Select Kitsu Project"])
+        self.projects_dropdown.currentIndexChanged.connect(self.on_project_selected)
+        kitsu_dropdown_layout.addWidget(QLabel("Select Kitsu Project:"))
+        kitsu_dropdown_layout.addWidget(self.projects_dropdown)
+
+        self.edits_dropdown = QComboBox()
+        self.edits_dropdown.addItems(["Select Kitsu Edit"])
+        self.edits_dropdown.currentIndexChanged.connect(self.on_edit_selected)
+        kitsu_dropdown_layout.addWidget(QLabel("Select Kitsu Edit:"))
+        kitsu_dropdown_layout.addWidget(self.edits_dropdown)
+
+        self.edit_tasks_dropdown = QComboBox()
+        self.edit_tasks_dropdown.addItems(["Select Kitsu Edit Task"])
+        kitsu_dropdown_layout.addWidget(QLabel("Select Kitsu Edit Task:"))
+        kitsu_dropdown_layout.addWidget(self.edit_tasks_dropdown)
+
+        self.shot_task_dropdown = QComboBox()
+        self.shot_task_dropdown.addItems(["Select Shot Task"])
+        self.shot_task_dropdown.currentIndexChanged.connect(self.on_shot_task_selected)
+        kitsu_dropdown_layout.addWidget(QLabel("Select Shot Task:"))
+        kitsu_dropdown_layout.addWidget(self.shot_task_dropdown)   
+
+
+        self.kitsu_dropdown_group.setVisible(False)  # Initially hidden
+        second_left_column_layout.addWidget(self.kitsu_dropdown_group)
+
+        spacer = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
+        second_left_column_layout.addItem(spacer)
+
+
+        # Second level Right Column --
+        second_right_column_layout = QVBoxLayout()
+
+        # Resolve Dropdown Section ---------------------------------------------------
+        resolve_dropdown_group = QGroupBox("Resolve Settings selection")
+        resolve_dropdown_layout = QVBoxLayout(resolve_dropdown_group)
+
+        self.preset_dropdown = QComboBox()
+        self.preset_dropdown.addItems(presets)
+        resolve_dropdown_layout.addWidget(QLabel("Select Render Preset:"))
+        resolve_dropdown_layout.addWidget(self.preset_dropdown) 
+
+
+        # Adding resolve dropdown to the second right column layout
+        resolve_dropdown_group.setVisible(True)  # Initially visible
+        second_right_column_layout.addWidget(resolve_dropdown_group)
+
+
+
+        # Adding the two second level columns to the horizontal layout
+        second_level_columns_layout.addLayout(second_left_column_layout)
+        second_level_columns_layout.addLayout(second_right_column_layout)
+
+
+        # Add the second level columns layout to the main layout
+        main_layout.addLayout(second_level_columns_layout)
+
+
+        # Directory Selection -------------------------------------------------
         dir_group = QGroupBox("Directory Selection")
         dir_layout = QVBoxLayout(dir_group)
 
@@ -79,87 +197,21 @@ class ResolvePublisherGUI(QMainWindow):
         dir_layout.addWidget(self.output_dir_label)
         dir_layout.addWidget(self.output_dir_button)
 
-        # Render Options
-        render_group = QGroupBox("Render Options")
-        render_layout = QHBoxLayout(render_group)
+        main_layout.addWidget(dir_group)
 
-        # Left Column
-        left_layout = QVBoxLayout()
-        self.render_group = QButtonGroup()
-        self.single_shot_checkbox = QCheckBox("Single Shots")
-        self.section_cut_checkbox = QCheckBox("Section Render cut")
-        self.full_cut_checkbox = QCheckBox("Full Cut")
-        left_layout.addWidget(self.single_shot_checkbox)
-        left_layout.addWidget(self.section_cut_checkbox)
-        left_layout.addWidget(self.full_cut_checkbox)
-
-        self.single_shot_checkbox.setChecked(True) # Default selections
-        self.full_cut_checkbox.setChecked(True)
-
-        # Right Column
-        right_layout = QVBoxLayout()
-        self.preset_dropdown = QComboBox()
-        self.preset_dropdown.addItems(presets)
-        right_layout.addWidget(QLabel("Select Render Preset:"))
-        right_layout.addWidget(self.preset_dropdown)
-
-        #self.update_preset_dropdown()
-
-
-        render_layout.addLayout(left_layout)
-        render_layout.addLayout(right_layout)
-
-        # Checkboxes
-        checkbox_group = QGroupBox("Export Options")
-        checkbox_layout = QHBoxLayout(checkbox_group)
-
-        checkbox_left_layout = QVBoxLayout()
-        self.checkbox_group = QButtonGroup()
-        self.export_otio_checkbox = QCheckBox("Export OTIO")
-        self.upload_kitsu_checkbox = QCheckBox("Upload to Kitsu")
-        self.upload_kitsu_checkbox.stateChanged.connect(self.on_kitsu_checkbox_changed)
-        checkbox_left_layout.addWidget(self.export_otio_checkbox)
-        checkbox_left_layout.addWidget(self.upload_kitsu_checkbox)
-
-        self.export_otio_checkbox.setChecked(True)
-        self.upload_kitsu_checkbox.setChecked(False)
-
-        checkbox_right_layout = QVBoxLayout()
-        self.projects_dropdown = QComboBox()
-        self.projects_dropdown.addItems(["Select Kitsu Project"])
-        self.projects_dropdown.currentIndexChanged.connect(self.on_project_selected)
-        checkbox_right_layout.addWidget(QLabel("Select Kitsu Project:"))
-        checkbox_right_layout.addWidget(self.projects_dropdown)
-        
-        self.edits_dropdown = QComboBox()
-        self.edits_dropdown.addItems(["Select Kitsu Edit"])
-        self.edits_dropdown.currentIndexChanged.connect(self.on_edit_selected)
-        checkbox_right_layout.addWidget(QLabel("Select Kitsu Edit:"))
-        checkbox_right_layout.addWidget(self.edits_dropdown)
-
-        self.edit_tasks_dropdown = QComboBox()
-        self.edit_tasks_dropdown.addItems(["Select Kitsu Edit Task"])
-        checkbox_right_layout.addWidget(QLabel("Select Kitsu Edit Task:"))
-        checkbox_right_layout.addWidget(self.edit_tasks_dropdown)
-
-
-        checkbox_layout.addLayout(checkbox_left_layout)
-        checkbox_layout.addLayout(checkbox_right_layout)
-
-
-        # Comment
+        # Comment Section ---------------------------------------------------
         comment_group = QGroupBox("Preview Comment")
         comment_layout = QVBoxLayout(comment_group)
 
         self.comment_label = QLabel("Add a description for the shot")
-
         self.comment = QTextEdit(self)
 
         comment_layout.addWidget(self.comment_label)
         comment_layout.addWidget(self.comment)
 
+        main_layout.addWidget(comment_group)
 
-        # Buttons
+        # Buttons ---------------------------------------------------
         button_layout = QHBoxLayout()
         self.start_button = QPushButton("Start")
         self.start_button.clicked.connect(self.start_process)
@@ -169,20 +221,6 @@ class ResolvePublisherGUI(QMainWindow):
 
         button_layout.addWidget(self.start_button)
         button_layout.addWidget(self.cancel_button)
-
-
-        self.export_dir = ""
-        self.output_dir = ""
-        self.selections = {}
-
-        # Adding to main layout
-        main_layout.addWidget(dir_group)
-        main_layout.addWidget(render_group)
-        main_layout.addWidget(checkbox_group)
-        main_layout.addWidget(comment_group)
-
-        # Add some spacing
-        main_layout.addSpacerItem(QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding))
 
         main_layout.addLayout(button_layout)
 
@@ -320,6 +358,23 @@ class ResolvePublisherGUI(QMainWindow):
         except Exception as e:
             print(f"Failed to fetch Kitsu tasks: {e}")
 
+    def get_kitsu_shot_tasks(self):
+        try:
+            import gazu
+
+            project = self.project_map[self.projects_dropdown.currentText()]
+            project_tasks = gazu.task.all_task_types_for_project(project)
+            #tasks_for_list = []
+            #pprint.pprint(kitsu_entity_types) 
+            for task in project_tasks:
+                if task.get("for_entity") == "Shot":
+                    task_name = task.get("name")
+                    self.shot_task_dropdown.addItem(task_name)
+                    #tasks_for_list.append(task_name)
+            #pprint.pprint(tasks_for_list)
+        except Exception as e:
+            print(f"Failed to fetch Kitsu shot tasks: {e}")
+
     def get_selections(self):
         """Get the user's selections as a dictionary."""
 
@@ -334,11 +389,15 @@ class ResolvePublisherGUI(QMainWindow):
             "update_kitsu": self.upload_kitsu_checkbox.isChecked(),
             "selected_kitsu_project": self.projects_dropdown.currentText() if self.upload_kitsu_checkbox.isChecked() else None,
             "selected_kitsu_edit": self.edits_dropdown.currentText() if self.upload_kitsu_checkbox.isChecked() else None,
-            #"selected_edit_task": self.edit_tasks_dropdown.currentText() if self.upload_kitsu_checkbox.isChecked() else None,  # Placeholder for task selection
             "selected_edit_task": self.get_selected_task_id() if self.upload_kitsu_checkbox.isChecked() else None,
+            "selected_shot_task": self.shot_task_dropdown.currentText() if self.upload_kitsu_checkbox.isChecked() else None,
             "description": self.comment.toPlainText()
         }
         return self.selections
+
+    def on_shot_task_selected(self, index):
+        pass
+
 
     def on_project_selected(self, index):
         """Triggered when a project is selected from the dropdown."""
@@ -348,6 +407,7 @@ class ResolvePublisherGUI(QMainWindow):
 
             # Perform actions based on the selected project
             self.kitsu_edits()  # Example: Load edits for the selected project
+            self.get_kitsu_shot_tasks()  # Example: Load tasks for the selected project
         else:
             print("No project selected.")
             self.edits_dropdown.clear()

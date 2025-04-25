@@ -14,7 +14,7 @@ A modular toolset for exporting and rendering editorial timelines in **DaVinci R
 ✅ Modular and extensible design for easy customization.\
 ✅ Easy to read GUI for user input.\
 
-
+![Tool Screenshot](https://github.com/hesmoar/EditorialPublisher/blob/UI-experiment-logging/readme_resources/EditorialPublisher_newLayout.png)
 ---
 
 ## **Requirements**

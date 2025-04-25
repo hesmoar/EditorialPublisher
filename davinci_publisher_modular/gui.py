@@ -35,7 +35,7 @@ class ResolvePublisherGUI(QMainWindow):
                     name = project["name"]
                     self.projects_dropdown.addItem(name)
                     self.project_map[name] = project
-
+                
                 print(f"Loaded {len(projects)} projects from Kitsu.")
 
                 self.kitsu_dropdown_group.setVisible(True)
@@ -358,6 +358,23 @@ class ResolvePublisherGUI(QMainWindow):
         except Exception as e:
             print(f"Failed to fetch Kitsu tasks: {e}")
 
+    def get_kitsu_shot_tasks(self):
+        try:
+            import gazu
+
+            project = self.project_map[self.projects_dropdown.currentText()]
+            project_tasks = gazu.task.all_task_types_for_project(project)
+            #tasks_for_list = []
+            #pprint.pprint(kitsu_entity_types) 
+            for task in project_tasks:
+                if task.get("for_entity") == "Shot":
+                    task_name = task.get("name")
+                    self.shot_task_dropdown.addItem(task_name)
+                    #tasks_for_list.append(task_name)
+            #pprint.pprint(tasks_for_list)
+        except Exception as e:
+            print(f"Failed to fetch Kitsu shot tasks: {e}")
+
     def get_selections(self):
         """Get the user's selections as a dictionary."""
 
@@ -372,8 +389,8 @@ class ResolvePublisherGUI(QMainWindow):
             "update_kitsu": self.upload_kitsu_checkbox.isChecked(),
             "selected_kitsu_project": self.projects_dropdown.currentText() if self.upload_kitsu_checkbox.isChecked() else None,
             "selected_kitsu_edit": self.edits_dropdown.currentText() if self.upload_kitsu_checkbox.isChecked() else None,
-            #"selected_edit_task": self.edit_tasks_dropdown.currentText() if self.upload_kitsu_checkbox.isChecked() else None,  # Placeholder for task selection
             "selected_edit_task": self.get_selected_task_id() if self.upload_kitsu_checkbox.isChecked() else None,
+            "selected_shot_task": self.shot_task_dropdown.currentText() if self.upload_kitsu_checkbox.isChecked() else None,
             "description": self.comment.toPlainText()
         }
         return self.selections
@@ -390,6 +407,7 @@ class ResolvePublisherGUI(QMainWindow):
 
             # Perform actions based on the selected project
             self.kitsu_edits()  # Example: Load edits for the selected project
+            self.get_kitsu_shot_tasks()  # Example: Load tasks for the selected project
         else:
             print("No project selected.")
             self.edits_dropdown.clear()

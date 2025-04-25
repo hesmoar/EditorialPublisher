@@ -136,7 +136,7 @@ def get_review_status():
     return next((status for status in gazu.task.all_task_statuses() if status.get("short_name") == 'wfa'), None)
 
 
-def files_to_publish(description):
+def files_to_publish(description, selected_task_name):
 
     pending_status = get_review_status()
     published_files = renders_to_publish
@@ -159,7 +159,7 @@ def files_to_publish(description):
                 shot_task = gazu.task.all_tasks_for_shot(shot)
 
                 for shottask in shot_task:
-                    if shottask.get("task_type_name") == "Storyboard": # This should ideally be determined by the timeline name
+                    if shottask.get("task_type_name") == selected_task_name: # This should ideally be determined by the timeline name
                         #print(f"THIS IS THE FILE PATH: {file}")
                         published_preview = gazu.task.publish_preview(task=shottask, 
                         task_status=pending_status, 

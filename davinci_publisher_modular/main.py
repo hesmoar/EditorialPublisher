@@ -66,6 +66,7 @@ def main():
     selected_kitsu_project = selections.get("selected_kitsu_project")
     selected_kitsu_edit = selections.get("selected_kitsu_edit")
     selected_edit_task = selections.get("selected_edit_task")
+    selected_shot_task = selections.get("selected_shot_task")
     description = selections.get("description")
 
     print("\nSelected Options:")
@@ -81,6 +82,8 @@ def main():
     print(f"Selected Kitsu Project: {selected_kitsu_project} ")
     print(f"Selected Kitsu Edit: {selected_kitsu_edit} ")
     print(f"Selected Kitsu Edit Task: {selected_edit_task} ")
+    print(f"Selected Kitsu Shot Task: {selected_shot_task} ")
+    print("=========================================")
 
 
     try:
@@ -110,12 +113,12 @@ def main():
             get_render_status(project)
             connect_to_kitsu()
             otio_file_path = export_otio(project, export_folder)
-            print("Read Otio file now! ")
+            #print("Read Otio file now! ")
             read_otio(otio_file_path)
-            print("Read otio file done! now Update Kitsu")
+            #print("Read otio file done! now Update Kitsu")
             update_kitsu(otio_file_path, selected_kitsu_project)
-            print("update kitsu done now files to publish")
-            files_to_publish(description)
+            #print("update kitsu done now files to publish")
+            files_to_publish(description, selected_shot_task)
             publish_edit_preview(selected_edit_task, description, final_full_cut_path)
 
         print("Process completed successfully!")

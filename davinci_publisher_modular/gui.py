@@ -365,15 +365,24 @@ class ResolvePublisherGUI(QMainWindow):
             project = self.project_map[self.projects_dropdown.currentText()]
             project_tasks = gazu.task.all_task_types_for_project(project)
             #tasks_for_list = []
-            #pprint.pprint(kitsu_entity_types) 
-            for task in project_tasks:
-                if task.get("for_entity") == "Shot":
-                    task_name = task.get("name")
-                    self.shot_task_dropdown.addItem(task_name)
-                    #tasks_for_list.append(task_name)
-            #pprint.pprint(tasks_for_list)
+            #pprint.pprint(kitsu_entity_types)
+            if project_tasks:
+                self.shot_task_dropdown.clear()
+                self.shot_task_dropdown.addItem("Select Shot Task")
+                #tasks_for_list.append("Select Shot Task")
+                for task in project_tasks:
+                    if task.get("for_entity") == "Shot":
+                        task_name = task.get("name")
+                        self.shot_task_dropdown.addItem(task_name)
+                        print(f"Loaded tasks for {task.get('for_entity')}")
+            else:
+                print("No tasks found for selected project entity: Shot")
+                self.shot_task_dropdown.clear()
+                self.shot_task_dropdown.addItem("No Tasks Found")
+
         except Exception as e:
             print(f"Failed to fetch Kitsu shot tasks: {e}")
+
 
     def get_selections(self):
         """Get the user's selections as a dictionary."""

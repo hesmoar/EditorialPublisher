@@ -1,8 +1,9 @@
 # 🎬 Editorial Publisher
 THIS IS A WORK IN PROGRESS!!!
 
-A modular toolset for exporting and rendering editorial timelines in **DaVinci Resolve**, and updating metadata in Kitsu. This project allows you to streamline the editorial process by exporting EDLs, OTIO files, and rendering shot-based clips and full cuts automatically.
+A modular toolset for exporting and rendering editorial timelines in **DaVinci Resolve**, and updating metadata in Kitsu. This project allows you to streamline the editorial process tracking by exporting OTIO files, and rendering shot-based clips and full cuts automatically and publishing previews into the project management software (**Kitsu**). 
 
+![Tool Screenshot](https://github.com/hesmoar/EditorialPublisher/blob/UI-experiment-logging/readme_resources/EditorialPublisher_newLayout.png)
 ---
 
 ## 🚀 **Features**
@@ -13,7 +14,7 @@ A modular toolset for exporting and rendering editorial timelines in **DaVinci R
 ✅ Modular and extensible design for easy customization.\
 ✅ Easy to read GUI for user input.\
 
-![Tool Screenshot](https://github.com/hesmoar/EditorialPublisher/blob/UI-experiment-logging/readme_resources/EditorialPublisher_newLayout.png)
+
 ---
 
 ## **Requirements**
@@ -69,6 +70,7 @@ pip install -r requirements.txt
 
 
 ## 💡 **Usage**
+![Tool Speed Run](https://github.com/hesmoar/EditorialPublisher/blob/master/readme_resources/EditorialPublisher_SpeedRun.gif)
 
 1. **Prepare DaVinci Resolve**
    - Open DaVinci Resolve.

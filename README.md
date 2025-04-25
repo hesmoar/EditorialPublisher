@@ -3,6 +3,7 @@ THIS IS A WORK IN PROGRESS!!!
 
 A modular toolset for exporting and rendering editorial timelines in **DaVinci Resolve**, and updating metadata in Kitsu. This project allows you to streamline the editorial process by exporting EDLs, OTIO files, and rendering shot-based clips and full cuts automatically.
 
+![Tool Speed Run](https://github.com/hesmoar/EditorialPublisher/blob/master/readme_resources/EditorialPublisher_SpeedRun.gif)
 ---
 
 ## 🚀 **Features**

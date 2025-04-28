@@ -1,9 +1,11 @@
 # file_utils.py
 import os
 from timeline_utils import get_timeline_name
+import shutil
+#from render_utils import renders_to_publish, final_full_cut_path
 
 #renders_to_publish = []
-
+test_path = r"D:\HecberryStuff\PAINANI STUDIOS\1_Proyectos\Active\1_Animaorquesta\PipeTest\RenderTest\Clips\moveTest"
 
 def get_unique_filename(base_name, directory, extension=""):
     """Generate a unique filename with an incremental version number."""
@@ -73,3 +75,20 @@ def export_otio(project, export_directory):
     return otioFilePath
 
 # In here we have to add file management functionality, so that it moves the files to the correct folder. 
+
+def move_files_to_publish_directory(single_shot_render_path):#, full_cut_render_path):
+    """First we need to move the files and then we need to publish them from that new location so that info is updated in Kitsu"""
+    for file in single_shot_render_path:
+        if os.path.exists(file):
+            #new_file_path = os.path.join(full_cut_render_path, os.path.basename(file))
+            new_file_path = os.path.join(test_path, os.path.basename(file))
+            try:
+                shutil.move(file, new_file_path)
+                print(f"Moved {file} to {new_file_path}")
+                single_shot_render_path.remove(file)
+                single_shot_render_path.append(new_file_path)
+            except Exception as e:
+                print(f"Error moving file {file}: {e}")
+        else:
+            print(f"File {file} does not exist.")
+    print(f"This is the new list of file paths: {single_shot_render_path}")

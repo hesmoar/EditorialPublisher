@@ -224,7 +224,7 @@ def publish_edit_preview(selected_edit_task, description, final_cut):
     published_preview = gazu.task.publish_preview(task=edit_task, # Find a way of getting the task based on the name maybe with a json mapping 
                         task_status=pending_status, 
                         comment=description, # Use the same as the user puts in the UI
-                        preview_file_path=final_cut # Lets find a way to use the file that results from the render of the full_cut
+                        preview_file_path=final_cut
                         )
 
 

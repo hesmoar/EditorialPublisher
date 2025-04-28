@@ -245,6 +245,8 @@ def render_jobs(project, selected_render_preset, output_folder: str, render_sing
 
         #pprint.pprint(renders_to_publish)
         project.StartRendering(jobs_to_render)
+        #print("This is the final full cut path: ", final_full_cut_path)
+        #print("These are the single shots render paths: ", renders_to_publish)
     return jobs_to_render, final_full_cut_path
 
 def get_render_status(project, delay=5):
@@ -261,6 +263,7 @@ def get_render_status(project, delay=5):
         time.sleep(delay)
     
     print("Rendering Complete")
+
 
     
 

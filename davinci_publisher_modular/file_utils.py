@@ -6,6 +6,7 @@ import shutil
 
 #renders_to_publish = []
 test_path = r"D:\HecberryStuff\PAINANI STUDIOS\1_Proyectos\Active\1_Animaorquesta\PipeTest\RenderTest\Clips\moveTest"
+new_renders_to_publish = []
 
 def get_unique_filename(base_name, directory, extension=""):
     """Generate a unique filename with an incremental version number."""
@@ -85,8 +86,9 @@ def move_files_to_publish_directory(single_shot_render_path):#, full_cut_render_
             try:
                 shutil.move(file, new_file_path)
                 print(f"Moved {file} to {new_file_path}")
-                single_shot_render_path.remove(file)
-                single_shot_render_path.append(new_file_path)
+                new_renders_to_publish.append(new_file_path)
+                #single_shot_render_path.remove(file)
+                #single_shot_render_path.append(new_file_path)
             except Exception as e:
                 print(f"Error moving file {file}: {e}")
         else:

@@ -6,6 +6,7 @@ import re
 import os
 from kitsu_project_context import select_project, get_project
 from render_utils import renders_to_publish #final_full_cut_path
+from file_utils import new_renders_to_publish
 #from timeline_utils import resolve_timeline_name
 
 #final_cut = final_full_cut_path
@@ -139,7 +140,7 @@ def get_review_status():
 def files_to_publish(description, selected_task_name):
 
     pending_status = get_review_status()
-    published_files = renders_to_publish
+    published_files = new_renders_to_publish
     kitsu_shots = selected_project_shots
 
 

@@ -94,3 +94,7 @@ def move_files_to_publish_directory(single_shot_render_path):#, full_cut_render_
         else:
             print(f"File {file} does not exist.")
     print(f"This is the new list of file paths: {single_shot_render_path}")
+
+# TODO: In order to add file management functionality, we need to add the context of the shot and task to the window and setup the file tree to work correctly.
+# TODO: Renders should be saved in each shot folder inside a specific folder for the task. 
+# TODO: Add creation of Output file and Working file in the publishing moment. 

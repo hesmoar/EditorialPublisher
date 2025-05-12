@@ -28,6 +28,7 @@ from file_utils import export_otio, move_files_to_publish_directory
 from render_utils import render_jobs, get_render_presets, get_render_status, final_full_cut_path, renders_to_publish
 from kitsu_auth import connect_to_kitsu
 from kitsu_editorial_publisher import read_otio, update_kitsu, files_to_publish, publish_edit_preview
+from kitsu_project_context import project_context
 
 
 def main():
@@ -112,6 +113,7 @@ def main():
 
         # Update on Kitsu if selected
         if should_update_kitsu:
+            project_context()
             get_render_status(project)
             connect_to_kitsu()
             otio_file_path = export_otio(project, export_folder)

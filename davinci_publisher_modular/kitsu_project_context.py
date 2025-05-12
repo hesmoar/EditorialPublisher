@@ -2,6 +2,34 @@ import kitsu_auth
 import gazu
 import tkinter as tk
 from tkinter import simpledialog, messagebox
+import json
+import pprint
+from kitsu_auth import kitsu_auto_login
+
+file_path = r"C:\Temp\KitsuTaskManager\Context\Kitsu_task_context.json"
+
+def get_context_from_json(json_file_path):
+    try:
+        with open(json_file_path, 'r') as file:
+            context_data = json.load(file)
+            return context_data
+    except Exception as e:
+        print(f"Error reading JSON file: {e}")
+        return None
+
+def project_context():
+    project = get_context_from_json(file_path)
+    project_name = project.get("project_name")
+    print(f"Project name that comes from the context json: {project_name}")
+    kitsu_auto_login()
+    project_dict = gazu.project.get_project_by_name(project_name)
+    if project_dict:
+        project_id = project_dict.get("id")
+        print(f"Project ID: {project_id}")
+        return project_id
+        #pprint.pprint(project_dict)
+
+project_context()
 
 def get_project():
     active_projects = gazu.project.all_open_projects()

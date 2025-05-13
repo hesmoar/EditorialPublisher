@@ -17,6 +17,9 @@ from kitsu_project_context import project_context, task_context, get_project
 class ResolvePublisherGUI(QMainWindow):
     """GUI for selecting export and render options"""
 
+    project_id, project_name = project_context()
+    task_id, task_name = task_context()
+
     def on_kitsu_checkbox_changed(self, state):
         """Triggered when Upload to Kitsu checkbox is toggled."""
         if state == 2: # If checked
@@ -27,7 +30,7 @@ class ResolvePublisherGUI(QMainWindow):
 
                 print("Logging into Kitsu and fetching projects...")
                 kitsu_auto_login()
-                project_id, project_name = project_context()
+                #project_id, project_name = project_context()
 
                 #TODO: Remove unnecesary code 
 
@@ -41,7 +44,7 @@ class ResolvePublisherGUI(QMainWindow):
                 #    self.project_map[name] = project
                 #
                 #print(f"Loaded {len(projects)} projects from Kitsu.")
-                print(f"Succesfuly loaded context project: {project_name}")
+                print(f"Succesfuly loaded context project: {self.project_name}")
 
                 self.kitsu_dropdown_group.setVisible(True)
             except Exception as e:
@@ -128,12 +131,10 @@ class ResolvePublisherGUI(QMainWindow):
         kitsu_dropdown_layout = QVBoxLayout(self.kitsu_dropdown_group)
 
         #FIXME: This section should show the information of the context from Kitsu, we dont need the user input anymore.
-        project_id, project_name = project_context()
-        task_id, task_name = task_context()
 
 
-        self.kitsu_project_label = QLabel(project_name)
-        self.kitsu_task_label = QLabel(task_name)
+        self.kitsu_project_label = QLabel(self.project_name)
+        self.kitsu_task_label = QLabel(self.task_name)
         kitsu_dropdown_layout.addWidget(self.kitsu_project_label)
         kitsu_dropdown_layout.addWidget(self.kitsu_task_label)
         
@@ -412,7 +413,8 @@ class ResolvePublisherGUI(QMainWindow):
             "render_full_cut": self.full_cut_checkbox.isChecked(),
             "selected_render_preset": self.preset_dropdown.currentText(),
             "update_kitsu": self.upload_kitsu_checkbox.isChecked(),
-            "selected_kitsu_project": self.projects_dropdown.currentText() if self.upload_kitsu_checkbox.isChecked() else None,
+            "selected_kitsu_project": self.project_name if self.upload_kitsu_checkbox.isChecked() else None,
+            #"selected_kitsu_project": self.projects_dropdown.currentText() if self.upload_kitsu_checkbox.isChecked() else None,
             "selected_kitsu_edit": self.edits_dropdown.currentText() if self.upload_kitsu_checkbox.isChecked() else None,
             "selected_edit_task": self.get_selected_task_id() if self.upload_kitsu_checkbox.isChecked() else None,
             "selected_shot_task": self.shot_task_dropdown.currentText() if self.upload_kitsu_checkbox.isChecked() else None,

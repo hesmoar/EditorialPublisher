@@ -5,6 +5,10 @@ import os
 pipe_scripts = os.getenv("PIPE_SCRIPTS_PATH")
 render_presets = []
 
+#TODO: Need to define different structures and actions of the publisher depending on the context (Shot, Edit, Asset)
+# Context sould define file structure, what gets published
+# First thing should be to set the conditional for how it currently works to be when opening an edit 
+
 def add_scripts_to_path(base_path, subfolder=r"Editorial_Publisher\davinci_publisher_modular"):
     """Add the scripts path to sys.path if not already included."""
     full_path = os.path.join(base_path, subfolder)

@@ -9,7 +9,7 @@ from PySide6.QtWidgets import (
 from PySide6.QtGui import QIcon
 from PySide6.QtCore import Qt
 from render_utils import get_render_presets
-from kitsu_project_context import project_context, task_context
+from kitsu_project_context import project_context, task_context, get_project
 
 
 
@@ -22,23 +22,26 @@ class ResolvePublisherGUI(QMainWindow):
         if state == 2: # If checked
             try:
                 import gazu
-                from kitsu_auth import connect_to_kitsu
+                from kitsu_auth import kitsu_auto_login
 
 
                 print("Logging into Kitsu and fetching projects...")
-                connect_to_kitsu()
-                projects = gazu.project.all_open_projects()
+                kitsu_auto_login()
+                project_id, project_name = project_context()
 
-                self.projects_dropdown.clear()
-                self.projects_dropdown.addItem("Select Kitsu Project")
-                self.project_map = {}
+                #TODO: Remove unnecesary code 
 
-                for project in projects:
-                    name = project["name"]
-                    self.projects_dropdown.addItem(name)
-                    self.project_map[name] = project
-                
-                print(f"Loaded {len(projects)} projects from Kitsu.")
+                #self.projects_dropdown.clear()
+                #self.projects_dropdown.addItem("Select Kitsu Project")
+                #self.project_map = {}
+#
+                #for project in projects:
+                #    name = project["name"]
+                #    self.projects_dropdown.addItem(name)
+                #    self.project_map[name] = project
+                #
+                #print(f"Loaded {len(projects)} projects from Kitsu.")
+                print(f"Succesfuly loaded context project: {project_name}")
 
                 self.kitsu_dropdown_group.setVisible(True)
             except Exception as e:
@@ -46,8 +49,8 @@ class ResolvePublisherGUI(QMainWindow):
                 self.kitsu_dropdown_group.setVisible(False)
         else:
 
-            self.projects_dropdown.clear()
-            self.projects_dropdown.addItem("Kitsu not enabled")
+            #self.projects_dropdown.clear()
+            #self.projects_dropdown.addItem("Kitsu not enabled")
             self.kitsu_dropdown_group.setVisible(False)
 
 
@@ -121,7 +124,7 @@ class ResolvePublisherGUI(QMainWindow):
         second_left_column_layout = QVBoxLayout()
 
         # Kitsu Dropdown Section ---------------------------------------------------
-        self.kitsu_dropdown_group = QGroupBox("Kitsu Settings selection")
+        self.kitsu_dropdown_group = QGroupBox("Kitsu Context")
         kitsu_dropdown_layout = QVBoxLayout(self.kitsu_dropdown_group)
 
         #FIXME: This section should show the information of the context from Kitsu, we dont need the user input anymore.
@@ -131,30 +134,31 @@ class ResolvePublisherGUI(QMainWindow):
 
         self.kitsu_project_label = QLabel(project_name)
         self.kitsu_task_label = QLabel(task_name)
-        self.projects_dropdown = QComboBox()
-        self.projects_dropdown.addItems(["Select Kitsu Project"])
-        self.projects_dropdown.currentIndexChanged.connect(self.on_project_selected)
         kitsu_dropdown_layout.addWidget(self.kitsu_project_label)
         kitsu_dropdown_layout.addWidget(self.kitsu_task_label)
-        kitsu_dropdown_layout.addWidget(QLabel("Select Kitsu Project:"))
-        kitsu_dropdown_layout.addWidget(self.projects_dropdown)
+        
+        #self.projects_dropdown = QComboBox()
+        #self.projects_dropdown.addItems(["Select Kitsu Project"])
+        #self.projects_dropdown.currentIndexChanged.connect(self.on_project_selected)
+        #kitsu_dropdown_layout.addWidget(QLabel("Select Kitsu Project:"))
+        #kitsu_dropdown_layout.addWidget(self.projects_dropdown)
 
-        self.edits_dropdown = QComboBox()
-        self.edits_dropdown.addItems(["Select Kitsu Edit"])
-        self.edits_dropdown.currentIndexChanged.connect(self.on_edit_selected)
-        kitsu_dropdown_layout.addWidget(QLabel("Select Kitsu Edit:"))
-        kitsu_dropdown_layout.addWidget(self.edits_dropdown)
+        #self.edits_dropdown = QComboBox()
+        #self.edits_dropdown.addItems(["Select Kitsu Edit"])
+        #self.edits_dropdown.currentIndexChanged.connect(self.on_edit_selected)
+        #kitsu_dropdown_layout.addWidget(QLabel("Select Kitsu Edit:"))
+        #kitsu_dropdown_layout.addWidget(self.edits_dropdown)
 
-        self.edit_tasks_dropdown = QComboBox()
-        self.edit_tasks_dropdown.addItems(["Select Kitsu Edit Task"])
-        kitsu_dropdown_layout.addWidget(QLabel("Select Kitsu Edit Task:"))
-        kitsu_dropdown_layout.addWidget(self.edit_tasks_dropdown)
+        #self.edit_tasks_dropdown = QComboBox()
+        #self.edit_tasks_dropdown.addItems(["Select Kitsu Edit Task"])
+        #kitsu_dropdown_layout.addWidget(QLabel("Select Kitsu Edit Task:"))
+        #kitsu_dropdown_layout.addWidget(self.edit_tasks_dropdown)
 
-        self.shot_task_dropdown = QComboBox()
-        self.shot_task_dropdown.addItems(["Select Shot Task"])
-        self.shot_task_dropdown.currentIndexChanged.connect(self.on_shot_task_selected)
-        kitsu_dropdown_layout.addWidget(QLabel("Select Shot Task:"))
-        kitsu_dropdown_layout.addWidget(self.shot_task_dropdown)   
+        #self.shot_task_dropdown = QComboBox()
+        #self.shot_task_dropdown.addItems(["Select Shot Task"])
+        #self.shot_task_dropdown.currentIndexChanged.connect(self.on_shot_task_selected)
+        #kitsu_dropdown_layout.addWidget(QLabel("Select Shot Task:"))
+        #kitsu_dropdown_layout.addWidget(self.shot_task_dropdown)   
 
 
         self.kitsu_dropdown_group.setVisible(False)  # Initially hidden

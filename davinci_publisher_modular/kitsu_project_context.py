@@ -29,7 +29,7 @@ def project_context():
         return project_id, project_name
         #pprint.pprint(project_dict)
 
-project_context()
+#project_context()
 
 def task_context():
     task = get_context_from_json(file_path)

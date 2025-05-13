@@ -26,11 +26,25 @@ def project_context():
     if project_dict:
         project_id = project_dict.get("id")
         print(f"Project ID: {project_id}")
-        return project_id
+        return project_id, project_name
         #pprint.pprint(project_dict)
 
 project_context()
 
+def task_context():
+    task = get_context_from_json(file_path)
+    task_id = task.get("task_id")
+    kitsu_auto_login()
+    task_dict = gazu.task.get_task(task_id)
+    #pprint.pprint(task_dict)
+    if task_dict:
+        task_name = task_dict.get("task_type")["name"]
+        print(f"THIS IS THE TASK NAME COMING FROM JSON: {task_name}")
+        task_id = task_dict.get("id")
+        print(f"Task ID: {task_id}")
+        print(f"Task name: {task_name}")
+        return task_id, task_name
+    
 def get_project():
     active_projects = gazu.project.all_open_projects()
 

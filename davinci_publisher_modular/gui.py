@@ -6,8 +6,10 @@ from PySide6.QtWidgets import (
     QApplication, QMainWindow, QWidget, QVBoxLayout, QLabel, QPushButton,
     QCheckBox, QRadioButton, QButtonGroup, QFileDialog, QHBoxLayout, QGroupBox, QFrame, QSpacerItem, QSizePolicy, QComboBox, QTextEdit
 )
+from PySide6.QtGui import QIcon
 from PySide6.QtCore import Qt
 from render_utils import get_render_presets
+from kitsu_project_context import project_context, task_context
 
 
 
@@ -52,6 +54,8 @@ class ResolvePublisherGUI(QMainWindow):
     def __init__(self, presets):
         super().__init__()
         self.setWindowTitle("Editorial Publisher Settings")
+        icon_path = r"D:\HecberryStuff\Dev\BetweenStudiosTools\Editorial_Tools\TaskManager\icons\KitsuPublisherIcon.ico"
+        self.setWindowIcon(QIcon(icon_path))
         self.setGeometry(300, 200, 650, 450)
 
         # Central widget and layout
@@ -120,10 +124,18 @@ class ResolvePublisherGUI(QMainWindow):
         self.kitsu_dropdown_group = QGroupBox("Kitsu Settings selection")
         kitsu_dropdown_layout = QVBoxLayout(self.kitsu_dropdown_group)
 
+        #FIXME: This section should show the information of the context from Kitsu, we dont need the user input anymore.
+        project_id, project_name = project_context()
+        task_id, task_name = task_context()
 
+
+        self.kitsu_project_label = QLabel(project_name)
+        self.kitsu_task_label = QLabel(task_name)
         self.projects_dropdown = QComboBox()
         self.projects_dropdown.addItems(["Select Kitsu Project"])
         self.projects_dropdown.currentIndexChanged.connect(self.on_project_selected)
+        kitsu_dropdown_layout.addWidget(self.kitsu_project_label)
+        kitsu_dropdown_layout.addWidget(self.kitsu_task_label)
         kitsu_dropdown_layout.addWidget(QLabel("Select Kitsu Project:"))
         kitsu_dropdown_layout.addWidget(self.projects_dropdown)
 

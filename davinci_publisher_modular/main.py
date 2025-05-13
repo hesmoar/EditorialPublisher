@@ -34,7 +34,7 @@ from kitsu_project_context import project_context
 def main():
     """Main function to run the script with GUI selections"""
     # Get current project
-    project = get_current_project(app)
+    project = get_current_project(app) # Get the current project from the DaVinci Resolve application
     if not project:
         print("Failed to load current project.")
         sys.exit(1)

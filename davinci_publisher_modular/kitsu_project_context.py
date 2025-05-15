@@ -12,10 +12,13 @@ def get_context_from_json(json_file_path):
     try:
         with open(json_file_path, 'r') as file:
             context_data = json.load(file)
+            pprint.pprint(context_data)
             return context_data
     except Exception as e:
         print(f"Error reading JSON file: {e}")
         return None
+    
+
 
 def project_context():
     project = get_context_from_json(file_path)
@@ -29,21 +32,15 @@ def project_context():
         return project_id, project_name
         #pprint.pprint(project_dict)
 
-#project_context()
+
 
 def task_context():
     task = get_context_from_json(file_path)
     task_id = task.get("task_id")
-    kitsu_auto_login()
-    task_dict = gazu.task.get_task(task_id)
-    #pprint.pprint(task_dict)
-    if task_dict:
-        task_name = task_dict.get("task_type")["name"]
-        print(f"THIS IS THE TASK NAME COMING FROM JSON: {task_name}")
-        task_id = task_dict.get("id")
-        print(f"Task ID: {task_id}")
-        print(f"Task name: {task_name}")
-        return task_id, task_name
+    task_name = task.get("task_type_name")
+    task_code = task.get("task_code")
+    
+    return task_id, task_name, task_code
     
 def get_project():
     active_projects = gazu.project.all_open_projects()

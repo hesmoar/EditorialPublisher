@@ -198,6 +198,10 @@ class ResolvePublisherGUI(QMainWindow):
 
 
         # Directory Selection -------------------------------------------------
+        #TODO Directory needs to be determined by the context and the file_tree.json.
+        # Replacing this should be the only thing needed for it to work. 
+        # The export dir for the OTIO file should be treated as a working file. 
+        # The path for the renders should be an output file. 
         dir_group = QGroupBox("Directory Selection")
         dir_layout = QVBoxLayout(dir_group)
 

@@ -205,10 +205,11 @@ class ResolvePublisherGUI(QMainWindow):
         dir_group = QGroupBox("Directory Selection")
         dir_layout = QVBoxLayout(dir_group)
 
+        # This directory would be for working_files
         self.export_dir_label = QLabel("OTIO export Directory: Not Selected")
         self.export_dir_button = QPushButton("Select OTIO export Directory")
         self.export_dir_button.clicked.connect(self.select_export_dir)
-
+        # This directory would be for output files
         self.output_dir_label = QLabel("Render Output Directory: Not Selected")
         self.output_dir_button = QPushButton("Select Render Output Directory")
         self.output_dir_button.clicked.connect(self.select_output_dir)

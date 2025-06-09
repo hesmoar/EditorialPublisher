@@ -2,9 +2,15 @@ import kitsu_auth
 import gazu
 import tkinter as tk
 from tkinter import simpledialog, messagebox
+<<<<<<< Updated upstream
 import json
 import pprint
 from kitsu_auth import kitsu_auto_login
+=======
+import os
+import json
+import tempfile
+>>>>>>> Stashed changes
 
 file_path = r"C:\Temp\KitsuTaskManager\Context\Kitsu_task_context.json"
 
@@ -106,3 +112,13 @@ def get_edit_info(selected_project_name):
         #pprint.pprint(project_edits))
     else:
         print("No edit here")
+
+def load_kitsu_task_context():
+    temp_dir = os.path.join(tempfile.gettempdir(), r"KitsuTaskManager\Context")
+    context_file = os.path.join(temp_dir, "Kitsu_task_context.json")
+    if os.path.exists(context_file):
+        with open(context_file, "r") as f:
+            return json.load(f)
+    else:
+        print("Context file not found.")
+        return None
